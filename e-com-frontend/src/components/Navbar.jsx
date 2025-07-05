@@ -55,6 +55,27 @@ const Navbar = () => {
           className='w-5 cursor-pointer sm:hidden'
         />
       </div>
+     {/* Mobile Menu */}
+        {vissible && (
+            <div className='fixed top-0 left-0 w-full h-full bg-black/50 z-50 sm:hidden' onClick={() => setVisible(false)}>
+            <div className='absolute top-0 right-0 w-[70%] h-full bg-white p-5 flex flex-col gap-5'>
+                <ul className='flex flex-col gap-5 text-sm text-gray-700'>
+                <NavLink onClick={()=>setVisible(false)} to='/' className='flex flex-col items-center gap-1'>
+                    <p>HOME</p>
+                </NavLink>
+                <NavLink onClick={()=>setVisible(false)} to='/collection' className='flex flex-col items-center gap-1'>
+                    <p>COLLECTION</p>
+                </NavLink>
+                <NavLink onClick={()=>setVisible(false)} to='/about' className='flex flex-col items-center gap-1'>
+                    <p>ABOUT</p>
+                </NavLink>
+                <NavLink onClick={()=>setVisible(false)} to='/contact' className='flex flex-col items-center gap-1'>
+                    <p>CONTACT</p>
+                </NavLink>
+                </ul>
+            </div>
+            </div>
+        )}
     </div>
   );
 };
