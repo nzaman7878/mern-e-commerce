@@ -1,15 +1,60 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/frontend_assets/assets';
 import Title from '../components/Title';
-import ProductItem from '../components/ProductItem'; 
+import ProductItem from '../components/ProductItem';
 
 const Collection = () => {
   const { products } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
+  const [filterProducts, setFilterProducts] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [subCategory, setSubcategory] = useState([]);
 
-  // ✅ In the future, filter based on checkbox selections
-  const filterProducts = products; // For now, just display all
+  // ✅ Handle category filter toggle
+  const toggleCategory = (e) => {
+    const value = e.target.value;
+    if (category.includes(value)) {
+      setCategory((prev) => prev.filter((item) => item !== value));
+    } else {
+      setCategory((prev) => [...prev, value]);
+    }
+  };
+
+  // ✅ Handle subcategory filter toggle
+  const toggleSubCategory = (e) => {
+    const value = e.target.value;
+    if (subCategory.includes(value)) {
+      setSubcategory((prev) => prev.filter((item) => item !== value));
+    } else {
+      setSubcategory((prev) => [...prev, value]);
+    }
+  };
+
+  // ✅ Apply filters
+  const applyFilter = () => {
+    let filtered = products;
+
+    if (category.length > 0) {
+      filtered = filtered.filter((item) => category.includes(item.category));
+    }
+
+    if (subCategory.length > 0) {
+      filtered = filtered.filter((item) => subCategory.includes(item.subCategory));
+    }
+
+    setFilterProducts(filtered);
+  };
+
+  // ✅ On first load, set all products
+  useEffect(() => {
+    setFilterProducts(products);
+  }, [products]);
+
+  // ✅ Whenever filters change, apply them
+  useEffect(() => {
+    applyFilter();
+  }, [category, subCategory]);
 
   return (
     <div className='flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t px-4 sm:px-10'>
@@ -21,9 +66,11 @@ const Collection = () => {
         >
           FILTERS
           <img
-            className={`h-3 sm:hidden transition-transform duration-300 ${showFilter ? 'rotate-90' : ''}`}
+            className={`h-3 sm:hidden transition-transform duration-300 ${
+              showFilter ? 'rotate-90' : ''
+            }`}
             src={assets.dropdown_icon}
-            alt=''
+            alt='toggle'
           />
         </p>
 
@@ -31,18 +78,18 @@ const Collection = () => {
         <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>CATEGORIES</p>
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
-            <label className='flex gap-2'>
-              <input className='w-3' type='checkbox' value='Men' />
-              Men
-            </label>
-            <label className='flex gap-2'>
-              <input className='w-3' type='checkbox' value='Women' />
-              Women
-            </label>
-            <label className='flex gap-2'>
-              <input className='w-3' type='checkbox' value='Kids' />
-              Kids
-            </label>
+            {['Men', 'Women', 'Kids'].map((cat) => (
+              <label key={cat} className='flex gap-2'>
+                <input
+                  className='w-3'
+                  type='checkbox'
+                  value={cat}
+                  onChange={toggleCategory}
+                  checked={category.includes(cat)}
+                />
+                {cat}
+              </label>
+            ))}
           </div>
         </div>
 
@@ -50,18 +97,18 @@ const Collection = () => {
         <div className={`border border-gray-300 pl-5 py-3 my-5 mt-6 ${showFilter ? '' : 'hidden'} sm:block`}>
           <p className='mb-3 text-sm font-medium'>TYPE</p>
           <div className='flex flex-col gap-2 text-sm font-light text-gray-700'>
-            <label className='flex gap-2'>
-              <input className='w-3' type='checkbox' value='Topwear' />
-              Topwear
-            </label>
-            <label className='flex gap-2'>
-              <input className='w-3' type='checkbox' value='Bottomwear' />
-              Bottomwear
-            </label>
-            <label className='flex gap-2'>
-              <input className='w-3' type='checkbox' value='Winterwear' />
-              Winterwear
-            </label>
+            {['Topwear', 'Bottomwear', 'Winterwear'].map((type) => (
+              <label key={type} className='flex gap-2'>
+                <input
+                  className='w-3'
+                  type='checkbox'
+                  value={type}
+                  onChange={toggleSubCategory}
+                  checked={subCategory.includes(type)}
+                />
+                {type}
+              </label>
+            ))}
           </div>
         </div>
       </div>
