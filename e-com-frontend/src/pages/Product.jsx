@@ -26,6 +26,7 @@ const Product = () => {
 
   useEffect(() => {
     fetchProductData();
+     window.scrollTo(0, 0);
   }, [fetchProductData]);
 
   if (productData === null) {
