@@ -1,11 +1,10 @@
-import express from 'express';
 import mongoose from 'mongoose';
+import validator from 'validator';
 
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        trim: true,
         maxlength: [50, 'Name cannot exceed 50 characters']
     },
     email: {
@@ -14,8 +13,13 @@ const userSchema = new mongoose.Schema({
         unique: true,
         lowercase: true,
         trim: true,
-        validate: [validateEmail, 'Please enter a valid email address'],
-        maxlength: [50, 'Email cannot exceed 50 characters']
+        maxlength: [50, 'Email cannot exceed 50 characters'],
+        validate: {
+            validator: function (v) {
+                return validator.isEmail(v);
+            },
+            message: 'Please enter a valid email address'
+        }
     },
     password: {
         type: String,
@@ -24,10 +28,11 @@ const userSchema = new mongoose.Schema({
         maxlength: [100, 'Password cannot exceed 100 characters'],
         select: false
     },
-   cartData: {
-    type: Object,
-    default: {}
-},  minimize: false });
+    cartData: {
+        type: Object,
+        default: {}
+    }
+}, { minimize: false });
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema);
 
