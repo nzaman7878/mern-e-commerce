@@ -8,10 +8,54 @@ const createToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET);
 };
 
+
 // Route for user login
 const loginUser = async (req, res) => {
-  
+  try {
+    const { email, password } = req.body;
+
+    // Find the user by email
+    const user = await userModel.findOne({ email }).select('+password'); 
+    
+    // If no user found
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Check password match
+    const isMatch = await bcrypt.compare(password, user.password);
+    
+    if (isMatch) {
+      const token = createToken(user._id);
+      res.json({
+        success: true,
+        token,
+        message: "Login successful",
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email
+        }
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "Incorrect password"
+      });
+    }
+
+  } catch (error) {
+    console.log('Login error:', error);
+    res.json({
+      success: false,
+      message: "Server Error"
+    });
+  }
 };
+
 
 // Route for user registration
 const registerUser = async (req, res) => {
