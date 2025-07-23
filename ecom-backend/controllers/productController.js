@@ -56,7 +56,7 @@ const addProduct = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in addProduct:', error);
+    console.error('Error in List Product:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Something went wrong while adding product'
@@ -79,7 +79,7 @@ const listProducts = async (req, res) => {
       products
     });
   } catch (error) {
-    console.error('Error in addProduct:', error);
+    console.error('Error in Remove Product:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Something went wrong while list product'
@@ -90,9 +90,40 @@ const listProducts = async (req, res) => {
 
 // function for removing  product
 
-const removeProduct = async (req, res) => {
 
-}
+const removeProduct = async (req, res) => {
+  try {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product ID is required.',
+      });
+    }
+
+    const deletedProduct = await productModel.findByIdAndDelete(id);
+
+    if (!deletedProduct) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Product removed successfully',
+    });
+  } catch (error) {
+    console.error('Error in removeProduct:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong while removing the product',
+    });
+  }
+};
+
 
 
 // function for single product info
