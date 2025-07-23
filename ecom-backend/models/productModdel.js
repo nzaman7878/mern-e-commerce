@@ -18,11 +18,14 @@ const productSchema = new mongoose.Schema({
         required: true,
         min: [0, 'Price cannot be negative']
     },
-    image: { 
-        type: [String], 
-        required: true,
-      
-    },
+   image: {
+  type: [String],   
+  required: true,
+  validate: {
+    validator: arr => arr.length > 0,
+    message: 'At least one image is required',
+  }
+},
     category: { 
         type: String, 
         required: true,
