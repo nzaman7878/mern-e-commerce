@@ -19,7 +19,7 @@ productRouter.post(
 
 
 productRouter.post('/remove', removeProduct);
-productRouter.post('/single', singleProduct);
+productRouter.get('/single', singleProduct);
 productRouter.get('/list', listProducts);
 
 

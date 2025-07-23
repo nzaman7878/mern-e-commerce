@@ -129,7 +129,38 @@ const removeProduct = async (req, res) => {
 // function for single product info
 
 const singleProduct = async (req, res) => {
+  try {
+    const { productId } = req.body;
 
-}
+    if (!productId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product ID is required',
+      });
+    }
+
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Product fetched successfully',
+      product,
+    });
+  } catch (error) {
+    console.error('Error in singleProduct:', error); 
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong while fetching product',
+    });
+  }
+};
+
 
 export { addProduct, listProducts, removeProduct, singleProduct };
