@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const productSchema = new mongoose.Schema({
     name: { 
         type: String, 
@@ -20,12 +21,7 @@ const productSchema = new mongoose.Schema({
     image: { 
         type: [String], 
         required: true,
-        validate: {
-            validator: function(arr) {
-                return arr.length > 0;
-            },
-            message: 'At least one image is required'
-        }
+      
     },
     category: { 
         type: String, 
@@ -44,7 +40,7 @@ const productSchema = new mongoose.Schema({
     },
     bestSeller: { 
         type: Boolean, 
-        default: false 
+        default: true 
     },
     date: { 
         type: Date, 
