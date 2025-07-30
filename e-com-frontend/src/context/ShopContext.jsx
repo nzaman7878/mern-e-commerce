@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { products } from "../assets/frontend_assets/assets";
+import axios from 'axios'
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
@@ -9,19 +9,38 @@ export const ShopContext = createContext();
 const ShopContextProvider = (props) => {
   const currency = '$';
   const delivery_fee = 10;
+  const backendUrl = import.meta.env.VITE_BACKEND_URL
+  const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
-  const [cartItems, setCartItems] = useState({}); 
+
+  // Initialize cartItems from localStorage for persistence, fallback to {}
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem("cartItems");
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
   const navigate = useNavigate();
 
-  const addToCart = async (itemId, size) => {
+  // Helper: deep clone cart to safely update state
+  const deepClone = (obj) => {
+    if (typeof structuredClone === "function") {
+      return structuredClone(obj);
+    }
+    return JSON.parse(JSON.stringify(obj));
+  };
+
+  const addToCart = (itemId, size) => {
     if (!size) {
       toast.error('Select Product Size');
       return;
     }
 
-    let cartData = structuredClone(cartItems); 
-    
+    const cartData = deepClone(cartItems);
     if (cartData[itemId]) {
       if (cartData[itemId][size]) {
         cartData[itemId][size] += 1;
@@ -32,65 +51,85 @@ const ShopContextProvider = (props) => {
       cartData[itemId] = {};
       cartData[itemId][size] = 1;
     }
-
-    setCartItems(cartData); 
-  }
+    setCartItems(cartData);
+  };
 
   const getCartCount = () => {
     let totalCount = 0;
-    for(const items in cartItems){
-      for(const item in cartItems[items]){
+    for (const items in cartItems) {
+      for (const item in cartItems[items]) {
         try {
-          if (cartItems[items][item] > 0){
+          if (cartItems[items][item] > 0) {
             totalCount += cartItems[items][item];
           }
-        } catch (error){
+        } catch (error) {
           console.error(error);
         }
       }
     }
     return totalCount;
-  }
+  };
 
-  const updateQuantity = async (itemId, size, quantity) => {
-    let cartData = structuredClone(cartItems);
+  const updateQuantity = (itemId, size, quantity) => {
+    const cartData = deepClone(cartItems);
 
-    // Handle quantity validation
     if (quantity <= 0) {
-      // Remove item if quantity is 0 or negative
       delete cartData[itemId][size];
-      // If no sizes left for this item, remove the item entirely
       if (Object.keys(cartData[itemId]).length === 0) {
         delete cartData[itemId];
       }
     } else {
-      // Update quantity
       cartData[itemId][size] = quantity;
     }
 
     setCartItems(cartData);
-  }
-  
+  };
+
   const getCartAmount = () => {
     let totalAmount = 0;
-    for(const items in cartItems){
+    for (const items in cartItems) {
       let itemInfo = products.find((product) => product._id === items);
-      for(const item in cartItems[items]){
+      for (const item in cartItems[items]) {
         try {
-          if (cartItems[items][item] > 0 && itemInfo) { 
+          if (cartItems[items][item] > 0 && itemInfo) {
             totalAmount += cartItems[items][item] * itemInfo.price;
           }
-        } catch (error) { 
+        } catch (error) {
           console.error(error);
         }
       }
     }
     return totalAmount;
-  }
+  };
+
+  // Persist cart to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    } catch (error) {
+      console.error("Failed to sync cartItems to localStorage", error);
+    }
+  }, [cartItems]);
+
+  // Fetch products from backend on mount
+  const getProductsData = async () => {
+    try {
+      const response = await axios.get(backendUrl + '/api/product/list');
+      if (response.data.success) {
+        setProducts(response.data.products);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || error.message || "Server Error");
+    }
+  };
 
   useEffect(() => {
-    console.log(cartItems);
-  }, [cartItems]); 
+    getProductsData();
+    // eslint-disable-next-line
+  }, []);
 
   const value = {
     products,
@@ -105,7 +144,8 @@ const ShopContextProvider = (props) => {
     getCartCount,
     updateQuantity,
     getCartAmount,
-    navigate
+    navigate,
+    backendUrl
   };
 
   return (

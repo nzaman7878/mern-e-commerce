@@ -41,7 +41,7 @@ const productSchema = new mongoose.Schema({
         required: true,
         enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
     },
-    bestSeller: { 
+    bestseller: { 
         type: Boolean, 
         default: true 
     },
