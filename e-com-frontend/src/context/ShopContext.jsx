@@ -13,6 +13,7 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
+  const [token, setToken] = useState('');
 
   // Initialize cartItems from localStorage for persistence, fallback to {}
   const [cartItems, setCartItems] = useState(() => {
@@ -131,6 +132,12 @@ const ShopContextProvider = (props) => {
     // eslint-disable-next-line
   }, []);
 
+  useEffect(()=>{
+    if (!token && localStorage.getItem('token')){
+      setToken(localStorage.getItem('token'));
+    }
+  })
+
   const value = {
     products,
     currency,
@@ -145,7 +152,9 @@ const ShopContextProvider = (props) => {
     updateQuantity,
     getCartAmount,
     navigate,
-    backendUrl
+    backendUrl,
+    token,
+    setToken
   };
 
   return (
