@@ -35,25 +35,50 @@ const ShopContextProvider = (props) => {
     return JSON.parse(JSON.stringify(obj));
   };
 
-  const addToCart = (itemId, size) => {
-    if (!size) {
-      toast.error('Select Product Size');
-      return;
-    }
+const addToCart = async (itemId, size) => {
+  if (!size) {
+    toast.error('Select Product Size');
+    return;
+  }
 
-    const cartData = deepClone(cartItems);
-    if (cartData[itemId]) {
-      if (cartData[itemId][size]) {
-        cartData[itemId][size] += 1;
-      } else {
-        cartData[itemId][size] = 1;
-      }
+  const cartData = deepClone(cartItems);
+  if (cartData[itemId]) {
+    if (cartData[itemId][size]) {
+      cartData[itemId][size] += 1;
     } else {
-      cartData[itemId] = {};
       cartData[itemId][size] = 1;
     }
-    setCartItems(cartData);
-  };
+  } else {
+    cartData[itemId] = {};
+    cartData[itemId][size] = 1;
+  }
+  
+  setCartItems(cartData);
+
+  if (token) {
+    try {
+      const response = await axios.post(
+        backendUrl + '/api/cart/add', 
+        { 
+          
+          itemId, 
+          size 
+        }, 
+        { headers: { token } }
+      );
+
+      if (!response.data.success) {
+        toast.error(response.data.message);
+      }
+
+    } catch (error) {
+      console.error(error);
+      toast.error(error.response?.data?.message || error.message);
+    }
+  }
+};
+
+
 
   const getCartCount = () => {
     let totalCount = 0;
