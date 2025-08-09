@@ -10,7 +10,7 @@ import { toast } from 'react-toastify'
 const PlaceOrder = () => {
   const [method, setMethod] = useState('cod');
   const navigate = useNavigate(); 
-  const { getCartAmount, backendUrl, token, cartItems,setCartItems,delivery_fee,products } = useContext(ShopContext);
+  const { getCartAmount, backendUrl, token, cartItems, setCartItems, delivery_fee, products, userId } = useContext(ShopContext);
 
   // Form state management
   const [formData, setFormData] = useState({
@@ -34,65 +34,63 @@ const PlaceOrder = () => {
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     
+ 
+    if (getCartAmount() === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+    
+    
+    if (!formData.firstName || !formData.lastName || !formData.email || 
+        !formData.street || !formData.city || !formData.state || 
+        !formData.zipcode || !formData.country || !formData.phone) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
     try {
-      
       let orderItems = []
       for(const items in cartItems){
         for(const item in cartItems[items]){
           if(cartItems[items][item] > 0){
-            const itemInfo = structuredClone(products.find(product =>product._id === items) )
-             if (itemInfo) {
+            const itemInfo = structuredClone(products.find(product => product._id === items))
+            if (itemInfo) {
               itemInfo.size = item
               itemInfo.quantity = cartItems[items][item]
               orderItems.push(itemInfo)
-             }
+            }
           }
         }
       }
+      
       let orderData = {
+        userId, // Add userId
         address: formData,
         items: orderItems,
         amount: getCartAmount() + delivery_fee
       }
 
       switch(method) {
-        //API calls for COD
-
         case 'cod':
-          { const response = await axios.post(backendUrl + 'api/order/place', orderData, {
-            headers:{token}
+          const response = await axios.post(backendUrl + '/api/order/place', orderData, {
+            headers: {token}
           })
-          if( response.data.success){
+          if(response.data.success){
             setCartItems({})
+            toast.success('Order placed successfully!')
             navigate('/orders')
           } else {
-            toast.error(response.data)
+            toast.error(response.data.message) 
           }
-          break; }
+          break;
         default:
+          toast.error('Please select a payment method');
           break;
       }
     } catch (error) {
-      
+      console.log(error)
+      toast.error(error.response?.data?.message || error.message)
     }
-
-    // Basic validation
-    if (getCartAmount() === 0) {
-      alert('Your cart is empty');
-      return;
-    }
-    
-    // Add form validation here
-    if (!formData.firstName || !formData.lastName || !formData.email) {
-      alert('Please fill in all required fields');
-      return;
-    }
-    
-    // Process order logic here
-    console.log('Order placed with method:', method);
-    console.log('Form data:', formData);
-    
-    navigate('/orders');
   };
 
   return (
