@@ -1,7 +1,7 @@
 import orderModel from '../models/orderModel.js'
 import userModel from '../models/userModel.js' 
 
-//Placing orders using COD method 
+//Placing orders using COD method  
 const placeOrder = async (req, res) =>  {
 try {
     const {userId, items, amount, address} = req.body;
