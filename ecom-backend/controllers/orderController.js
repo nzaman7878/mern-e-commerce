@@ -1,6 +1,7 @@
 import orderModel from '../models/orderModel.js'
 import userModel from '../models/userModel.js' 
 import Stripe from 'stripe'
+import razorpay from 'razorpay'
 
 // global variables
 const currency = 'inr'
@@ -24,7 +25,7 @@ const placeOrder = async (req, res) => {
             payment: false,
             date: Date.now()
         }
-        
+    //Placing orders using COD method 
         const newOrder = new orderModel(orderData)
         await newOrder.save()
 
