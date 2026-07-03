@@ -64,7 +64,7 @@ const Navbar = () => {
             {token && 
               <div className='group-hover:block hidden absolute right-0 pt-6'>
                 <div className='flex flex-col gap-3 w-40 py-4 px-6 bg-[#F9F9F7] border border-gray-200 shadow-xl text-gray-700 text-sm'>
-                  <p className='cursor-pointer editorial-link w-max'>My Profile</p>
+                  <p onClick={() => navigate('/profile')} className='cursor-pointer editorial-link w-max'>My Profile</p>
                   <p onClick={() => navigate('/orders')} className='cursor-pointer editorial-link w-max'>Orders</p>
                   <p onClick={logout} className='cursor-pointer editorial-link w-max'>Logout</p>
                 </div>

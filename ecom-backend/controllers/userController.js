@@ -142,7 +142,51 @@ const adminLogin = async (req, res) => {
   }
 };
 
+const getUserProfile = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await userModel.findById(userId).select('-password');
+    if (!user) {
+      return res.json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, user });
+  } catch (error) {
+    console.error('Get profile error:', error);
+    res.json({ success: false, message: 'Server Error' });
+  }
+};
 
+const updateUserProfile = async (req, res) => {
+  try {
+    const { userId, name, email, password } = req.body;
+    const user = await userModel.findById(userId);
 
+    if (!user) {
+      return res.json({ success: false, message: 'User not found' });
+    }
 
-export default { loginUser, registerUser, adminLogin };
+    if (name) user.name = name;
+    if (email) {
+      if (!validator.isEmail(email)) {
+        return res.json({ success: false, message: 'Please enter a valid email address' });
+      }
+      user.email = email;
+    }
+    if (password) {
+      if (password.length < 8) {
+        return res.json({ success: false, message: 'Password must be at least 8 characters long' });
+      }
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
+
+    await user.save();
+    res.json({ success: true, message: 'Profile updated successfully' });
+
+  } catch (error) {
+    console.error('Update profile error:', error);
+    res.json({ success: false, message: 'Server Error' });
+  }
+};
+
+export default { loginUser, registerUser, adminLogin, getUserProfile, updateUserProfile };

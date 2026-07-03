@@ -168,6 +168,26 @@ const ShopContextProvider = (props) => {
     getProductsData();
     // eslint-disable-next-line
   }, []);
+  const [userData, setUserData] = useState(null);
+
+  const fetchUserData = async (currentToken) => {
+    try {
+      const response = await axios.post(
+        backendUrl + "/api/user/profile/get",
+        {},
+        { headers: { token: currentToken } }
+      );
+      if (response.data.success) {
+        setUserData(response.data.user);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
   const getUserCart = async (token) => {
     try {
       const response = await axios.post(
@@ -195,8 +215,10 @@ const ShopContextProvider = (props) => {
   useEffect(() => {
     if (token) {
       getUserCart(token);
+      fetchUserData(token);
     }
   }, [token]);
+
   const value = {
     products,
     currency,
@@ -215,6 +237,8 @@ const ShopContextProvider = (props) => {
     backendUrl,
     token,
     setToken,
+    userData,
+    fetchUserData,
   };
 
   return (
