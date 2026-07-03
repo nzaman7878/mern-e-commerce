@@ -43,64 +43,81 @@ const Login = () => {
     if (token) {
       navigate('/')
     }
-  }, [token]);
+  }, [token, navigate]);
 
   return (
-    <form onSubmit={onSubmitHandler} className='flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800'>
-      <div className='inline-flex items-center gap-2 mb-2 mt-10'>
-        <p className='prata-regular text-3xl'>{currentState}</p>
-        <hr className='border-none h-[1.5px] w-8 bg-gray-800' />
-      </div>
+    <div className='bg-[#F9F9F7] min-h-screen pt-32 pb-24 px-6 flex items-center justify-center'>
+      <form onSubmit={onSubmitHandler} className='w-full max-w-md flex flex-col gap-12'>
+        <div className='text-center mb-4'>
+          <h1 className='font-serif text-5xl lg:text-7xl text-[#2A2A2A] leading-none'>
+            {currentState === 'Login' ? 'Sign In.' : 'Register.'}
+          </h1>
+        </div>
 
-      {currentState === 'Sign Up' && (
-        <input
-          onChange={(e) => setName(e.target.value)}
-          value={name}
-          className='w-full px-3 py-2 border border-gray-800'
-          type='text'
-          placeholder='Name'
-          required
-          autoComplete='name'
-        />
-      )}
+        <div className='flex flex-col gap-8'>
+          {currentState === 'Sign Up' && (
+            <div className='relative'>
+              <input
+                onChange={(e) => setName(e.target.value)}
+                value={name}
+                className='peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm'
+                type='text'
+                placeholder=' '
+                required
+                autoComplete='name'
+              />
+              <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Name</label>
+            </div>
+          )}
 
-      <input
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-        className='w-full px-3 py-2 border border-gray-800'
-        type='email'
-        placeholder='Email'
-        required
-        autoComplete='email'
-      />
-      <input
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-        className='w-full px-3 py-2 border border-gray-800'
-        type='password'
-        placeholder='Password'
-        required
-        autoComplete={currentState === 'Login' ? 'current-password' : 'new-password'}
-      />
-      <div className='w-full flex justify-between text-sm mt-[-8px]'>
-        <p className='cursor-pointer'>Forgot your password?</p>
-        {currentState === 'Login' ? (
-          <p onClick={() => setCurrentState('Sign Up')} className='cursor-pointer'>
-            Create account
-          </p>
-        ) : (
-          <p onClick={() => setCurrentState('Login')} className='cursor-pointer'>
-            Login Here
-          </p>
-        )}
-      </div>
-      <button
-        type='submit'
-        className='bg-black text-white font-light px-8 py-2 mt-4'
-      >
-        {currentState === 'Login' ? 'Sign In' : 'Sign Up'}
-      </button>
-    </form>
+          <div className='relative'>
+            <input
+              onChange={(e) => setEmail(e.target.value)}
+              value={email}
+              className='peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm'
+              type='email'
+              placeholder=' '
+              required
+              autoComplete='email'
+            />
+            <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Email Address</label>
+          </div>
+
+          <div className='relative'>
+            <input
+              onChange={(e) => setPassword(e.target.value)}
+              value={password}
+              className='peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm'
+              type='password'
+              placeholder=' '
+              required
+              autoComplete={currentState === 'Login' ? 'current-password' : 'new-password'}
+            />
+            <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Password</label>
+          </div>
+        </div>
+
+        <div className='flex flex-col gap-6 mt-4'>
+          <button
+            type='submit'
+            className='w-full bg-[#2A2A2A] text-[#F9F9F7] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors'
+          >
+            {currentState === 'Login' ? 'Sign In' : 'Sign Up'}
+          </button>
+          
+          <div className='w-full flex justify-between font-sans text-[10px] tracking-widest uppercase text-gray-400'>
+            {currentState === 'Login' ? (
+              <>
+                <p className='cursor-pointer hover:text-[#2A2A2A] transition-colors'>Forgot Password?</p>
+                <p onClick={() => setCurrentState('Sign Up')} className='cursor-pointer hover:text-[#2A2A2A] transition-colors'>Create Account</p>
+              </>
+            ) : (
+              <p onClick={() => setCurrentState('Login')} className='cursor-pointer hover:text-[#2A2A2A] transition-colors w-full text-center'>Already have an account? Sign In</p>
+            )}
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 

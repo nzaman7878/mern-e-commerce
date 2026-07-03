@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
-import Title from './Title';
 import ProductItem from './ProductItem';
 
 const LatestCollection = () => {
@@ -8,31 +7,62 @@ const LatestCollection = () => {
   const [latestProducts, setLatestProducts] = useState([]);
 
   useEffect(() => {
-    setLatestProducts(products.slice(0, 12));
-  }, [products]); // Added products as dependency
+    setLatestProducts(products.slice(0, 6)); // Just 6 for a curated editorial look
+  }, [products]);
 
   return (
-    <div className='my-10'>
-      <div className='text-center py-8 px-4 sm:px-8'>
-        <Title text1={'LATEST'} text2={'COLLECTIONS'} />
-        <p className='mt-4 max-w-[800px] mx-auto text-xs sm:text-base text-gray-600'>
-          Discover our latest collection of products that are designed to elevate your style and
-          comfort. From trendy apparel to must-have accessories, explore the freshest additions
-          to our store that cater to every taste and occasion.
-        </p>
+    <div id="collection" className='my-32 px-6 md:px-12 lg:px-24'>
+      <div className='flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8'>
+        <div className='max-w-2xl'>
+          <h2 className='font-serif text-4xl md:text-6xl text-[#2A2A2A] mb-6'>
+            Curated <br /><span className='italic font-light text-gray-500'>Selections</span>
+          </h2>
+          <p className='text-sm text-gray-500 leading-relaxed font-sans max-w-md'>
+            Discover our latest collection of products designed to elevate your lifestyle. A blend of minimalist aesthetics and brutalist utility.
+          </p>
+        </div>
+        <div>
+           <button className='text-xs uppercase tracking-widest editorial-link whitespace-nowrap'>View Complete Archive</button>
+        </div>
       </div>
 
-      {/* Rendering Products */}
-      <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 gap-y-6 px-5 sm:px-10'>
-        {latestProducts.map((item, index) => (
-          <ProductItem
-            key={index}
-            id={item._id}
-            image={item.image}
-            name={item.name}
-            price={item.price}
-          />
-        ))}
+      {/* Asymmetrical / Editorial Grid */}
+      <div className='grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16'>
+        {latestProducts.map((item, index) => {
+          // Create an asymmetrical layout based on index
+          let spanClass = 'md:col-span-4'; // default
+          let marginClass = '';
+
+          if (index === 0) {
+            spanClass = 'md:col-span-7';
+          } else if (index === 1) {
+            spanClass = 'md:col-span-4';
+            marginClass = 'md:mt-32';
+          } else if (index === 2) {
+            spanClass = 'md:col-span-5';
+            marginClass = 'md:mt-16';
+          } else if (index === 3) {
+            spanClass = 'md:col-span-7';
+            marginClass = 'md:-mt-16';
+          } else if (index === 4) {
+            spanClass = 'md:col-span-8';
+          } else if (index === 5) {
+            spanClass = 'md:col-span-4';
+            marginClass = 'md:mt-24';
+          }
+
+          return (
+            <div key={index} className={`${spanClass} ${marginClass}`}>
+              <ProductItem
+                id={item._id}
+                image={item.image}
+                name={item.name}
+                price={item.price}
+                index={index}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

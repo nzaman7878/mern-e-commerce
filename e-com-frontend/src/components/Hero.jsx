@@ -3,35 +3,40 @@ import { assets } from '../assets/frontend_assets/assets';
 
 const Hero = () => {
   return (
-    <div className='flex flex-col sm:flex-row border border-gray-400 rounded-lg overflow-hidden'>
-      {/* Hero left side */}
-      <div className='w-full sm:w-1/2 flex items-center justify-center py-10 sm:py-0'>
-        <div className='text-[#414141] space-y-4 px-6 sm:px-0'>
-          <div className='flex items-center gap-2'>
-            <p className='w-8 md:w-11 h-[2px] bg-[#414141]'></p>
-            <p className='font-medium text-sm md:text-base'>OUR BESTSELLERS</p>
-          </div>
-
-          <h1 className=' prata-regular text-3xl sm:py-3 lg:text-5xl leading-relaxed'>
-            Latest Arrivals
-          </h1>
-
-          <div className='flex items-center gap-2'>
-            <p className='font-semibold text-sm md:text-base cursor-pointer'>
-              SHOP NOW
-            </p>
-            <p className='w-8 md:w-11 h-[1px] bg-[#414141]'></p>
-          </div>
-        </div>
+    <div className='relative w-full h-screen min-h-[800px] flex items-center bg-[#F9F9F7] pt-20 overflow-hidden'>
+      {/* Background Image/Shape layer */}
+      <div className='absolute right-0 top-0 w-3/4 md:w-1/2 h-full'>
+        <img
+          className='w-full h-full object-cover grayscale opacity-90 transition-transform duration-[20s] hover:scale-105'
+          src={assets.hero_img}
+          alt='Premium Collection'
+        />
+        <div className='absolute inset-0 bg-gradient-to-r from-[#F9F9F7] via-transparent to-transparent hidden md:block'></div>
+        <div className='absolute inset-0 bg-[#F9F9F7]/30 md:hidden'></div>
       </div>
 
-      {/* Hero right side */}
-      <div className='w-full sm:w-1/2 flex items-center justify-center'>
-        <img
-          className='w-full h-auto object-cover'
-          src={assets.hero_img}
-          alt='Hero'
-        />
+      {/* Typography Overlay */}
+      <div className='relative z-10 w-full px-6 md:px-12 lg:px-24 flex flex-col justify-center h-full'>
+        <div className='max-w-4xl space-y-6 md:space-y-12 mt-20 md:mt-0'>
+          
+          <div className='flex items-center gap-6 opacity-70'>
+            <p className='w-12 h-[1px] bg-[#2A2A2A]'></p>
+            <p className='font-sans text-xs tracking-[0.3em] uppercase'>2026 Collection</p>
+          </div>
+
+          <h1 className='font-serif text-5xl sm:text-7xl lg:text-8xl leading-[0.9] text-[#2A2A2A] -ml-1 md:-ml-2'>
+            Redefine <br />
+            <span className='italic font-light text-gray-500'>the</span> Standard.
+          </h1>
+
+          <div className='pt-8 md:pt-16'>
+             <a href="#collection" className='group flex items-center gap-4 w-max cursor-pointer'>
+                <p className='font-sans text-xs tracking-widest uppercase editorial-link'>Explore Collection</p>
+                <div className='w-12 h-[1px] bg-[#2A2A2A] group-hover:w-20 transition-all duration-500'></div>
+             </a>
+          </div>
+
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,5 @@
 import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Title from '../components/Title'
 import CartTotal from '../components/CartTotal'
 import { assets } from '../assets/frontend_assets/assets'
 import { ShopContext } from '../context/ShopContext'
@@ -21,17 +20,8 @@ const PlaceOrder = () => {
     userId 
   } = useContext(ShopContext);
 
-  // Form state management
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    street: '',
-    city: '',
-    state: '',
-    zipcode: '',
-    country: '',
-    phone: ''
+    firstName: '', lastName: '', email: '', street: '', city: '', state: '', zipcode: '', country: '', phone: ''
   });
 
   const onChangeHandler = (event) => {
@@ -42,17 +32,12 @@ const PlaceOrder = () => {
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
-    
-    // Validation checks
     if (getCartAmount() === 0) {
-      toast.error('Your cart is empty');
+      toast.error('Your archive is empty');
       return;
     }
-    
-    if (!formData.firstName || !formData.lastName || !formData.email || 
-        !formData.street || !formData.city || !formData.state || 
-        !formData.zipcode || !formData.country || !formData.phone) {
-      toast.error('Please fill in all required fields');
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.street || !formData.city || !formData.state || !formData.zipcode || !formData.country || !formData.phone) {
+      toast.error('Complete all required fields');
       return;
     }
     
@@ -80,204 +65,144 @@ const PlaceOrder = () => {
 
       switch(method) {
         case 'cod':
-          const response = await axios.post(backendUrl + '/api/order/place', orderData, {
-            headers: { token }
-          })
+          const response = await axios.post(backendUrl + '/api/order/place', orderData, { headers: { token } })
           if(response.data.success){
             setCartItems({})
-            toast.success('Order placed successfully!')
+            toast.success('Order placed successfully.')
             navigate('/orders')
           } else {
             toast.error(response.data.message) 
           }
           break;
-
         case 'stripe': 
-          const responseStripe = await axios.post(backendUrl + '/api/order/stripe', orderData, {
-            headers: { token }
-          })
+          const responseStripe = await axios.post(backendUrl + '/api/order/stripe', orderData, { headers: { token } })
           if (responseStripe.data.success) {
-            const { session_url } = responseStripe.data
-            window.location.replace(session_url)
+            window.location.replace(responseStripe.data.session_url)
           } else {
             toast.error(responseStripe.data.message)
           }
           break;
-
         case 'razorpay':
-          const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, {
-            headers: { token }
-          })
+          const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { token } })
           if (responseRazorpay.data.success) {
-            // Handle Razorpay response
             toast.success('Redirecting to Razorpay...')
           } else {
             toast.error(responseRazorpay.data.message)
           }
           break;
-
         default:
-          toast.error('Please select a payment method');
+          toast.error('Select a payment method');
           break;
       }
     } catch (error) {
-      console.log(error)
       toast.error(error.response?.data?.message || error.message)
     }
   };
 
   return (
-    <form onSubmit={onSubmitHandler} className='flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t'>
-      {/* Left side - Delivery Information */}
-      <div className='flex flex-col gap-4 w-full sm:max-w-[480px]'>
-        <div className='text-xl sm:text-2xl my-3'>
-          <Title text1={'DELIVERY'} text2={'INFORMATION'} />
-        </div>
+    <form onSubmit={onSubmitHandler} className='px-6 md:px-12 lg:px-24 pt-32 pb-24 min-h-screen bg-[#F9F9F7] text-[#2A2A2A]'>
+      
+      <div className='flex flex-col lg:flex-row justify-between gap-24'>
         
-        <div className='flex gap-3'>
-          <input 
-            required
-            onChange={onChangeHandler}
-            name='firstName'
-            value={formData.firstName}
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full focus:border-gray-500 focus:outline-none' 
-            type="text" 
-            placeholder='First Name' 
-          />
-          <input 
-            required
-            onChange={onChangeHandler}
-            name='lastName'
-            value={formData.lastName}
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full focus:border-gray-500 focus:outline-none' 
-            type="text" 
-            placeholder='Last Name' 
-          />
-        </div>
-        
-        <input 
-          required
-          onChange={onChangeHandler}
-          name='email'
-          value={formData.email}
-          className='border border-gray-300 rounded py-1.5 px-3.5 w-full focus:border-gray-500 focus:outline-none' 
-          type="email" 
-          placeholder='Email Address' 
-        />
-        
-        <input 
-          required
-          onChange={onChangeHandler}
-          name='street'
-          value={formData.street}
-          className='border border-gray-300 rounded py-1.5 px-3.5 w-full focus:border-gray-500 focus:outline-none' 
-          type="text" 
-          placeholder='Street' 
-        />
-        
-        <div className='flex gap-3'>
-          <input 
-            required
-            onChange={onChangeHandler}
-            name='city'
-            value={formData.city}
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full focus:border-gray-500 focus:outline-none' 
-            type="text" 
-            placeholder='City' 
-          />
-          <input 
-            required
-            onChange={onChangeHandler}
-            name='state'
-            value={formData.state}
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full focus:border-gray-500 focus:outline-none' 
-            type="text" 
-            placeholder='State' 
-          />
-        </div>
-        
-        <div className='flex gap-3'>
-          <input 
-            required
-            onChange={onChangeHandler}
-            name='zipcode'
-            value={formData.zipcode}
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full focus:border-gray-500 focus:outline-none' 
-            type="text" 
-            placeholder='Zip Code' 
-          />
-          <input 
-            required
-            onChange={onChangeHandler}
-            name='country'
-            value={formData.country}
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full focus:border-gray-500 focus:outline-none' 
-            type="text" 
-            placeholder='Country' 
-          />
-        </div>
-        
-        <input 
-          required
-          onChange={onChangeHandler}
-          name='phone'
-          value={formData.phone}
-          className='border border-gray-300 rounded py-1.5 px-3.5 w-full focus:border-gray-500 focus:outline-none' 
-          type="tel" 
-          placeholder='Phone Number' 
-        />
-      </div>
-
-      {/* Right Side - Order Summary */}
-      <div className='mt-8'>
-        <div className='mt-8 min-w-80'>
-          <CartTotal />
-        </div>
-        
-        <div className='mt-12'>
-          <Title text1={'PAYMENT'} text2={'METHOD'} />
+        {/* Delivery Details */}
+        <div className='flex flex-col gap-8 w-full lg:w-3/5'>
+          <h2 className='font-serif text-4xl md:text-5xl mb-8'>Delivery Details.</h2>
           
-          {/* Payment Method Selection */}
-          <div className='flex gap-3 flex-col lg:flex-row'>
-            <div 
-              onClick={() => setMethod('stripe')} 
-              className={`flex items-center gap-3 border p-2 px-3 cursor-pointer rounded transition-colors ${
-                method === 'stripe' ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-gray-400'
-              }`}
-            >
-              <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'stripe' ? 'bg-green-400' : ''}`}></p>
-              <img className='h-5 mx-4' src={assets.stripe_logo} alt="Stripe" />
+          <div className='flex gap-8'>
+            <div className='relative w-full'>
+               <input required onChange={onChangeHandler} name='firstName' value={formData.firstName} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">First Name</label>
             </div>
-            
-            <div 
-              onClick={() => setMethod('razorpay')} 
-              className={`flex items-center gap-3 border p-2 px-3 cursor-pointer rounded transition-colors ${
-                method === 'razorpay' ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-gray-400'
-              }`}
-            >
-              <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'razorpay' ? 'bg-green-400' : ''}`}></p>
-              <img className='h-5 mx-4' src={assets.razorpay_logo} alt="Razorpay" />
-            </div>
-            
-            <div 
-              onClick={() => setMethod('cod')} 
-              className={`flex items-center gap-3 border p-2 px-3 cursor-pointer rounded transition-colors ${
-                method === 'cod' ? 'border-green-400 bg-green-50' : 'border-gray-300 hover:border-gray-400'
-              }`}
-            >
-              <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'cod' ? 'bg-green-400' : ''}`}></p>
-              <p className='text-gray-500 text-sm font-medium mx-4'>CASH ON DELIVERY</p>
+            <div className='relative w-full'>
+               <input required onChange={onChangeHandler} name='lastName' value={formData.lastName} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Last Name</label>
             </div>
           </div>
           
-          <div className='w-full text-end mt-8'>
-            <button 
-              type="submit"
-              className='bg-black text-white px-16 py-3 text-sm hover:bg-gray-800 transition-colors rounded disabled:opacity-50'
-              disabled={!method}
-            >
-              PLACE ORDER
-            </button>
+          <div className='relative w-full'>
+             <input required onChange={onChangeHandler} name='email' value={formData.email} type="email" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
+             <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Email Address</label>
+          </div>
+          
+          <div className='relative w-full'>
+             <input required onChange={onChangeHandler} name='street' value={formData.street} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
+             <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Street Address</label>
+          </div>
+          
+          <div className='flex gap-8'>
+            <div className='relative w-full'>
+               <input required onChange={onChangeHandler} name='city' value={formData.city} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">City</label>
+            </div>
+            <div className='relative w-full'>
+               <input required onChange={onChangeHandler} name='state' value={formData.state} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">State / Province</label>
+            </div>
+          </div>
+          
+          <div className='flex gap-8'>
+            <div className='relative w-full'>
+               <input required onChange={onChangeHandler} name='zipcode' value={formData.zipcode} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Zip Code</label>
+            </div>
+            <div className='relative w-full'>
+               <input required onChange={onChangeHandler} name='country' value={formData.country} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Country</label>
+            </div>
+          </div>
+          
+          <div className='relative w-full'>
+             <input required onChange={onChangeHandler} name='phone' value={formData.phone} type="tel" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
+             <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Phone Number</label>
+          </div>
+        </div>
+
+        {/* Order Summary */}
+        <div className='w-full lg:w-2/5'>
+          <div className='lg:sticky lg:top-32'>
+            <div className='mb-12'>
+              <CartTotal />
+            </div>
+            
+            <div className='mt-12'>
+              <h3 className='font-sans text-xs tracking-[0.2em] uppercase mb-8 border-b border-[#2A2A2A]/10 pb-4'>Payment Method</h3>
+              
+              <div className='flex flex-col gap-4'>
+                <div 
+                  onClick={() => setMethod('stripe')} 
+                  className={`flex items-center justify-between p-4 cursor-pointer border transition-colors ${method === 'stripe' ? 'border-[#2A2A2A] bg-[#2A2A2A] text-[#F9F9F7]' : 'border-[#2A2A2A]/20 hover:border-[#2A2A2A]'}`}
+                >
+                  <span className='font-sans text-xs tracking-widest uppercase'>Credit Card (Stripe)</span>
+                  <div className={`w-3 h-3 rounded-full border ${method === 'stripe' ? 'border-[#F9F9F7] bg-[#F9F9F7]' : 'border-[#2A2A2A]/30'}`}></div>
+                </div>
+                
+                <div 
+                  onClick={() => setMethod('razorpay')} 
+                  className={`flex items-center justify-between p-4 cursor-pointer border transition-colors ${method === 'razorpay' ? 'border-[#2A2A2A] bg-[#2A2A2A] text-[#F9F9F7]' : 'border-[#2A2A2A]/20 hover:border-[#2A2A2A]'}`}
+                >
+                  <span className='font-sans text-xs tracking-widest uppercase'>Razorpay</span>
+                  <div className={`w-3 h-3 rounded-full border ${method === 'razorpay' ? 'border-[#F9F9F7] bg-[#F9F9F7]' : 'border-[#2A2A2A]/30'}`}></div>
+                </div>
+                
+                <div 
+                  onClick={() => setMethod('cod')} 
+                  className={`flex items-center justify-between p-4 cursor-pointer border transition-colors ${method === 'cod' ? 'border-[#2A2A2A] bg-[#2A2A2A] text-[#F9F9F7]' : 'border-[#2A2A2A]/20 hover:border-[#2A2A2A]'}`}
+                >
+                  <span className='font-sans text-xs tracking-widest uppercase'>Cash on Delivery</span>
+                  <div className={`w-3 h-3 rounded-full border ${method === 'cod' ? 'border-[#F9F9F7] bg-[#F9F9F7]' : 'border-[#2A2A2A]/30'}`}></div>
+                </div>
+              </div>
+              
+              <div className='mt-12'>
+                <button 
+                  type="submit"
+                  className='w-full bg-[#2A2A2A] text-[#F9F9F7] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                  disabled={!method}
+                >
+                  Confirm Order
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

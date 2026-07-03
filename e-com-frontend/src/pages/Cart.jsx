@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
-import Title from '../components/Title';
 import { assets } from '../assets/frontend_assets/assets';
 import CartTotal from '../components/CartTotal';
 
@@ -29,76 +28,78 @@ const Cart = () => {
   }, [cartItems,products]);
 
   return (
-    <div className='border-t pt-14'>
-      <div className='text-2xl mb-3'>
-        <Title text1={'YOUR'} text2={'CART'} />
+    <div className='bg-[#F9F9F7] text-[#2A2A2A] min-h-screen pt-32 px-6 md:px-12 lg:px-24'>
+      <div className='mb-24'>
+        <h1 className='font-serif text-5xl lg:text-7xl leading-none'>
+          Your <span className='italic font-light text-gray-400'>Bag.</span>
+        </h1>
       </div>
 
-      <div> 
-        {cartData.map((item, index) => {
-          const productData = products.find((product) => product._id === item._id);
-          
-          // Add error handling
-          if (!productData) {
-            return null; // or return a loading/error component
-          }
+      <div className='flex flex-col lg:flex-row gap-24'> 
+        
+        {/* Cart Items List */}
+        <div className='flex-1'>
+          {cartData.map((item, index) => {
+            const productData = products.find((product) => product._id === item._id);
+            
+            if (!productData) return null;
 
-          return (
-            <div 
-              key={index} 
-              className='py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4'
-            >
-              <div className='flex items-start gap-6'>
-                <img className='w-16 sm:w-20' src={productData.image[0]} alt="" />
-                <div>
-                  <p className='text-xs sm:text-lg font-medium'>
-                    {productData.name}
-                  </p>
-                  <div className='flex items-center gap-5 mt-2'>
-                    <p>{currency}{productData.price}</p>
-                    <p className='px-2 sm:px-3 sm:py-1 bg-slate-50'>{item.size}</p>
+            return (
+              <div 
+                key={index} 
+                className='py-8 border-b border-[#2A2A2A]/10 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto] items-center gap-8 group'
+              >
+                <div className='flex items-center gap-8'>
+                  <img className='w-24 md:w-32 object-cover aspect-[4/5]' src={productData.image[0]} alt="" />
+                  <div>
+                    <p className='font-serif text-xl md:text-3xl mb-2'>
+                      {productData.name}
+                    </p>
+                    <div className='flex items-center gap-6 font-sans text-xs tracking-widest uppercase'>
+                      <p className='font-serif italic text-base'>{currency}{productData.price}</p>
+                      <p className='border border-[#2A2A2A] px-3 py-1'>{item.size}</p>
+                    </div>
                   </div>
                 </div>
+                
+                <input 
+                  className='bg-transparent border-b border-[#2A2A2A]/30 w-16 px-2 py-2 text-center font-sans text-xs tracking-widest outline-none focus:border-[#2A2A2A] transition-colors' 
+                  type="number" 
+                  min={1} 
+                  value={item.quantity}
+                  onChange={(e) => updateQuantity(item._id, item.size, Number(e.target.value))}
+                />
+                
+                <button 
+                  onClick={() => updateQuantity(item._id, item.size, 0)} 
+                  className='font-sans text-[10px] tracking-widest uppercase text-gray-400 hover:text-[#2A2A2A] transition-colors'
+                >
+                  Remove
+                </button>
               </div>
-              
-              <input 
-                className='border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1' 
-                type="number" 
-                min={1} 
-                value={item.quantity}
-                onChange={(e) => updateQuantity(item._id, item.size, Number(e.target.value))}
-              />
-              
-              <img 
-                onClick={() => updateQuantity(item._id, item.size, 0)} 
-                className='w-4 mr-4 sm:w-5 cursor-pointer' 
-                src={assets.bin_icon} 
-                alt="Delete item" 
-              />
+            )
+          })}
+
+          {/* Empty cart message */}
+          {cartData.length === 0 && (
+            <div className='py-24 border-b border-[#2A2A2A]/10'>
+              <p className='font-sans text-sm tracking-widest uppercase text-gray-400'>Your bag is empty.</p>
             </div>
-          )
-        })}
-      </div>
-
-      {/* Empty cart message */}
-      {cartData.length === 0 && (
-        <div className='text-center py-8'>
-          <p className='text-gray-500 text-lg'>Your cart is empty</p>
+          )}
         </div>
-      )}
-      <div className='flex justify-end my-20'>
-        <div className='w-full sm:w-[450px]'>
-          <CartTotal />
-          <div className='w-full text-end'>
-            <button onClick={()=>navigate('/place-order')} className='bg-black text-white text-sm my-8 px-8 py-3'>PROCEED TO CHECKOUT</button>
-          </div>
 
+        {/* Cart Total Section */}
+        <div className='w-full lg:w-[450px] shrink-0'>
+          <CartTotal />
+          <div className='mt-12'>
+            <button onClick={()=>navigate('/place-order')} className='w-full bg-[#2A2A2A] text-[#F9F9F7] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors'>
+              Proceed to Checkout
+            </button>
+          </div>
         </div>
 
       </div>
     </div>
-
-    
   )
 }
 

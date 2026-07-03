@@ -1,11 +1,12 @@
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { assets } from '../assets/frontend_assets/assets';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { ShopContext } from '../context/ShopContext';
 
 const Navbar = () => {
-  const [vissible, setVisible] = useState(false);
-  const {setShowSearch, getCartCount, navigate,token,setToken, setCartItems} = useContext(ShopContext);
+  const [visible, setVisible] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const {setShowSearch, getCartCount, navigate, token, setToken, setCartItems} = useContext(ShopContext);
   
   const logout = () => {
     if (token) {
@@ -13,85 +14,104 @@ const Navbar = () => {
       setToken('');
       localStorage.removeItem('token');
       setCartItems([]);
-      
     }
   };
 
+  const handleSearchClick = () => {
+    setShowSearch(true);
+    navigate('/collection');
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className='flex items-center justify-between py-5 font-medium'>
-      <img src={assets.logo} alt='logo' className='w-36' />
-
-      <ul className='hidden sm:flex gap-5 text-sm text-gray-700'>
-        <NavLink to='/' className='flex flex-col items-center gap-1'>
-          <p>HOME</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-        <NavLink to='/collection' className='flex flex-col items-center gap-1'>
-          <p>COLLECTION</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-        <NavLink to='/about' className='flex flex-col items-center gap-1'>
-          <p>ABOUT</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-        <NavLink to='/contact' className='flex flex-col items-center gap-1'>
-          <p>CONTACT</p>
-          <hr className='w-2/4 border-none h-[1.5px] bg-gray-700 hidden' />
-        </NavLink>
-      </ul>
-
-      <div className='flex items-center gap-6'>
-        <img onClick={()=>setShowSearch(true)} src={assets.search_icon} alt='search' className='w-5 cursor-pointer' />
-
-        <div className='group relative'>
-          <Link to='/login'>
-          <img onClick={()=> token ? null : navigate('/login')} src={assets.profile_icon} alt='profile' className='w-5 cursor-pointer' /></Link>
-          {token && 
-          <div className='group-hover:block hidden absolute right-0 pt-4'>
-            <div className='flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded-lg'>
-              <p className='cursor-pointer hover:text-black'>My Profile</p>
-              <p onClick={()=> navigate('/orders')} className='cursor-pointer hover:text-black'>Orders</p>
-              <p onClick={logout} className='cursor-pointer hover:text-black'>Logout</p>
-            </div>
-          </div>
-          }
-          
+    <>
+      <div className={`fixed top-0 left-0 w-full z-40 transition-all duration-500 px-6 md:px-12 py-6 flex items-center justify-between ${scrolled ? 'bg-[#F9F9F7]/90 backdrop-blur-md shadow-sm py-4' : 'bg-transparent'}`}>
+        
+        {/* Left: Menu Toggle */}
+        <div className='flex-1 flex items-center'>
+          <button 
+            onClick={() => setVisible(true)}
+            className='text-xs tracking-[0.2em] font-medium uppercase hover:opacity-70 transition-opacity'
+          >
+            Menu
+          </button>
         </div>
 
-        <Link to='/cart' className='relative'>
-          <img src={assets.cart_icon} alt='cart' className='w-5 min-w-5' />
-          <p className='absolute right-[-5px] bottom-[-5px] text-center leading-4 bg-black text-white aspect-square rounded-full text-[10px]'>{getCartCount()}</p>
-        </Link>
+        {/* Center: Logo */}
+        <div className='flex-1 flex justify-center'>
+          <Link to='/'>
+            <img src={assets.logo} alt='logo' className='w-28 md:w-36 grayscale opacity-90' />
+          </Link>
+        </div>
 
-        <img
-          onClick={() => setVisible(true)}
-          src={assets.menu_icon}
-          alt='menu'
-          className='w-5 cursor-pointer sm:hidden'
-        />
+        {/* Right: Actions */}
+        <div className='flex-1 flex items-center justify-end gap-6 md:gap-8'>
+          <button onClick={handleSearchClick} className='hover:opacity-70 transition-opacity'>
+            <img src={assets.search_icon} alt='search' className='w-4 md:w-5' />
+          </button>
+
+          <div className='group relative hidden sm:block'>
+            <Link to='/login' className='hover:opacity-70 transition-opacity block'>
+              <img onClick={() => token ? null : navigate('/login')} src={assets.profile_icon} alt='profile' className='w-4 md:w-5' />
+            </Link>
+            {token && 
+              <div className='group-hover:block hidden absolute right-0 pt-6'>
+                <div className='flex flex-col gap-3 w-40 py-4 px-6 bg-[#F9F9F7] border border-gray-200 shadow-xl text-gray-700 text-sm'>
+                  <p className='cursor-pointer editorial-link w-max'>My Profile</p>
+                  <p onClick={() => navigate('/orders')} className='cursor-pointer editorial-link w-max'>Orders</p>
+                  <p onClick={logout} className='cursor-pointer editorial-link w-max'>Logout</p>
+                </div>
+              </div>
+            }
+          </div>
+
+          <Link to='/cart' className='relative hover:opacity-70 transition-opacity'>
+            <img src={assets.cart_icon} alt='cart' className='w-4 md:w-5' />
+            <p className='absolute -right-2 -bottom-2 text-center leading-4 bg-[#2A2A2A] text-[#F9F9F7] aspect-square rounded-full text-[9px] min-w-[1rem] w-auto h-4 px-1 flex items-center justify-center font-bold'>
+              {getCartCount()}
+            </p>
+          </Link>
+        </div>
       </div>
-     {/* Mobile Menu */}
-        {vissible && (
-            <div className='fixed top-0 left-0 w-full h-full bg-black/50 z-50 sm:hidden' onClick={() => setVisible(false)}>
-            <div className='absolute top-0 right-0 w-[70%] h-full bg-white p-5 flex flex-col gap-5'>
-                <ul className='flex flex-col gap-5 text-sm text-gray-700'>
-                <NavLink onClick={()=>setVisible(false)} to='/' className='flex flex-col items-center gap-1'>
-                    <p>HOME</p>
-                </NavLink>
-                <NavLink onClick={()=>setVisible(false)} to='/collection' className='flex flex-col items-center gap-1'>
-                    <p>COLLECTION</p>
-                </NavLink>
-                <NavLink onClick={()=>setVisible(false)} to='/about' className='flex flex-col items-center gap-1'>
-                    <p>ABOUT</p>
-                </NavLink>
-                <NavLink onClick={()=>setVisible(false)} to='/contact' className='flex flex-col items-center gap-1'>
-                    <p>CONTACT</p>
-                </NavLink>
-                </ul>
-            </div>
-            </div>
-        )}
-    </div>
+
+      {/* Full Screen Menu Overlay */}
+      <div className={`fixed inset-0 bg-[#F9F9F7] z-50 transition-transform duration-700 ease-in-out origin-top ${visible ? 'scale-y-100' : 'scale-y-0'}`}>
+        <div className='absolute top-6 right-6 md:top-10 md:right-12'>
+          <button 
+            onClick={() => setVisible(false)}
+            className='text-xs tracking-[0.2em] font-medium uppercase hover:opacity-70 transition-opacity'
+          >
+            Close
+          </button>
+        </div>
+
+        <div className='flex flex-col items-center justify-center h-full gap-8 md:gap-12'>
+          <NavLink onClick={() => setVisible(false)} to='/' className='group overflow-hidden'>
+            <p className='font-serif text-4xl md:text-7xl group-hover:italic transition-all duration-500'>Home</p>
+          </NavLink>
+          <NavLink onClick={() => setVisible(false)} to='/collection' className='group overflow-hidden'>
+            <p className='font-serif text-4xl md:text-7xl group-hover:italic transition-all duration-500'>Collection</p>
+          </NavLink>
+          <NavLink onClick={() => setVisible(false)} to='/about' className='group overflow-hidden'>
+            <p className='font-serif text-4xl md:text-7xl group-hover:italic transition-all duration-500'>About</p>
+          </NavLink>
+          <NavLink onClick={() => setVisible(false)} to='/contact' className='group overflow-hidden'>
+            <p className='font-serif text-4xl md:text-7xl group-hover:italic transition-all duration-500'>Contact</p>
+          </NavLink>
+          
+          <div className='mt-12 flex gap-8 sm:hidden'>
+             <Link to='/login' onClick={() => setVisible(false)} className='text-xs uppercase tracking-widest editorial-link'>Account</Link>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 

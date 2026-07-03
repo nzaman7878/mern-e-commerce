@@ -1,45 +1,48 @@
 import React from 'react';
-import { assets } from '../assets/frontend_assets/assets';
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <div className='px-4 sm:px-10'>
-      {/* Footer Content */}
-      <div className='flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-10 mt-20 text-sm'>
-        {/* Brand Info */}
-        <div>
-          <img src={assets.logo} className='mb-5 w-32' alt='SnazzyFit Logo' />
-          <p className='w-full md:w-2/3 text-gray-600'>
-            SnazzyFit is your go-to fashion destination for the latest trends, timeless classics, and premium comfort. We bring style to your doorstep with trust and quality.
+    <div className='px-6 md:px-12 lg:px-24 py-20 mt-32 border-t border-[#2A2A2A]/10 bg-[#F9F9F7] text-[#2A2A2A]'>
+      <div className='flex flex-col md:flex-row justify-between gap-16'>
+        
+        {/* Brand / Logo Replacement */}
+        <div className='md:w-1/2'>
+          <h2 className='font-serif text-5xl md:text-7xl mb-8 leading-none'>
+            Snazzy<br />
+            <span className='italic font-light text-gray-500'>Fit.</span>
+          </h2>
+          <p className='font-sans text-xs tracking-widest uppercase text-gray-500 max-w-xs leading-loose'>
+            Curated essentials for the modern aesthetic. Designed with intent.
           </p>
         </div>
 
-        {/* Company Links */}
-        <div>
-          <p className='text-xl font-medium mb-5'>COMPANY</p>
-          <ul className='flex flex-col gap-1 text-gray-600'>
-            <li>Home</li>
-            <li>About Us</li>
-            <li>Delivery</li>
-            <li>Privacy Policy</li>
-          </ul>
-        </div>
-
-        {/* Contact Info */}
-        <div>
-          <p className='text-xl font-medium mb-5'>GET IN TOUCH</p>
-          <ul className='flex flex-col gap-1 text-gray-600'>
-            <li>+91 90876 53917</li>
-            <li>support@snazzyfit.com</li>
-          </ul>
+        {/* Links */}
+        <div className='flex gap-16 md:gap-32'>
+          <div>
+            <p className='font-sans text-xs tracking-[0.2em] uppercase mb-8 font-semibold'>Index</p>
+            <ul className='flex flex-col gap-4 font-serif text-lg italic text-gray-600'>
+              <li><Link to="/" onClick={() => window.scrollTo(0,0)} className='editorial-link'>Home</Link></li>
+              <li><Link to="/collection" onClick={() => window.scrollTo(0,0)} className='editorial-link'>Collection</Link></li>
+              <li><Link to="/about" onClick={() => window.scrollTo(0,0)} className='editorial-link'>About</Link></li>
+              <li><Link to="/journal" onClick={() => window.scrollTo(0,0)} className='editorial-link'>Journal</Link></li>
+            </ul>
+          </div>
+          <div>
+            <p className='font-sans text-xs tracking-[0.2em] uppercase mb-8 font-semibold'>Connect</p>
+            <ul className='flex flex-col gap-4 font-serif text-lg italic text-gray-600'>
+              <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className='editorial-link'>Instagram</a></li>
+              <li><a href="https://pinterest.com" target="_blank" rel="noopener noreferrer" className='editorial-link'>Pinterest</a></li>
+              <li><Link to="/contact" onClick={() => window.scrollTo(0,0)} className='editorial-link'>Contact</Link></li>
+            </ul>
+          </div>
         </div>
       </div>
 
-      {/* Divider & Footer Bottom */}
-      <hr className='border-gray-300' />
-      <p className='py-5 text-sm text-center text-gray-500'>
-        © 2025 SnazzyFit.com — All Rights Reserved.
-      </p>
+      <div className='mt-32 pt-8 border-t border-[#2A2A2A]/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-sans tracking-widest uppercase text-gray-400'>
+        <p>© 2026 SNAZZYFIT ARCHIVE.</p>
+        <p>ALL RIGHTS RESERVED.</p>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useContext } from 'react'
 import { ShopContext } from '../context/ShopContext'
-import Title from './Title';
 
 function CartTotal() {
     const {currency, delivery_fee, getCartAmount} = useContext(ShopContext);
@@ -11,26 +10,26 @@ function CartTotal() {
 
     return (
         <div className='w-full'>
-            <div className='text-2xl'>
-                <Title text1={"CART"} text2={"TOTALS"} />
+            <div className='mb-8 border-b border-[#2A2A2A]/10 pb-4'>
+                <h2 className='font-serif text-3xl text-[#2A2A2A]'>
+                    Order <span className='italic text-gray-400'>Summary.</span>
+                </h2>
             </div>
             
-            <div className='flex flex-col gap-2 mt-2 text-sm'>
-                <div className='flex justify-between'>
+            <div className='flex flex-col gap-6 font-sans text-xs tracking-widest uppercase text-[#2A2A2A]'>
+                <div className='flex justify-between items-end border-b border-[#2A2A2A]/10 pb-4'>
                     <p>Subtotal</p>
-                    <p>{currency}{subtotal.toFixed(2)}</p>
+                    <p className='font-serif italic text-base'>{currency}{subtotal.toFixed(2)}</p>
                 </div>
-                <hr />
                 
-                <div className='flex justify-between'>
-                    <p>Shipping Fee</p>
-                    <p>{currency}{delivery_fee.toFixed(2)}</p>
+                <div className='flex justify-between items-end border-b border-[#2A2A2A]/10 pb-4'>
+                    <p>Shipping</p>
+                    <p className='font-serif italic text-base'>{currency}{delivery_fee.toFixed(2)}</p>
                 </div>
-                <hr />
                 
-                <div className='flex justify-between'>
+                <div className='flex justify-between items-end pt-4'>
                     <b>Total</b>
-                    <b>{currency}{total.toFixed(2)}</b>
+                    <b className='font-serif italic text-2xl'>{currency}{total.toFixed(2)}</b>
                 </div>
             </div>
         </div>

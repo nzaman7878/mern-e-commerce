@@ -3,31 +3,30 @@ import React from 'react';
 const NewsletterBox = () => {
   const onSubmitHandler = (event) => {
     event.preventDefault();
-    
   };
 
   return (
-    <div className='text-center px-4 sm:px-0'>
-      <p className='text-2xl font-medium text-gray-800'>Subscribe now & get 20% off</p>
-      <p className='text-gray-500 mt-3'>
-        Join our newsletter to receive exclusive offers, style tips, and updates on the latest arrivals.
+    <div className='mt-32 border-t border-[#2A2A2A]/10 pt-24 pb-24 text-center px-6 md:px-12 lg:px-24 bg-[#F9F9F7]'>
+      <h2 className='font-serif text-5xl lg:text-7xl text-[#2A2A2A] leading-none mb-6'>Join the <br/><span className='italic font-light text-gray-400'>Archive.</span></h2>
+      <p className='font-sans text-sm text-gray-500 mb-16 max-w-lg mx-auto'>
+        Subscribe to receive early access to new collections, exclusive editorial content, and unique offers.
       </p>
 
       <form
         onSubmit={onSubmitHandler}
-        className='w-full sm:w-1/2 flex items-center gap-3 mx-auto my-6 border pl-3 pr-1 py-1 rounded-full shadow-sm'
+        className='w-full max-w-2xl mx-auto flex flex-col sm:flex-row gap-6'
       >
         <input
-          className='w-full py-4 px-3 outline-none text-sm text-gray-700'
+          className='w-full bg-transparent border-b border-[#2A2A2A]/30 py-4 text-center sm:text-left text-lg font-serif italic text-[#2A2A2A] outline-none placeholder:text-gray-400 focus:border-[#2A2A2A] transition-colors'
           type='email'
-          placeholder='Enter your email'
+          placeholder='Your email address'
           required
         />
         <button
           type='submit'
-          className='bg-black text-white text-xs font-medium px-6 py-4 rounded-full hover:bg-gray-800 transition'
+          className='bg-[#2A2A2A] text-[#F9F9F7] text-xs font-sans tracking-[0.2em] uppercase px-12 py-5 hover:bg-black transition-colors shrink-0'
         >
-          SUBSCRIBE NOW
+          Subscribe
         </button>
       </form>
     </div>

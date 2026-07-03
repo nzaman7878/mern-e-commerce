@@ -14,17 +14,19 @@ const ProductItem = ({ id, name, price, image }) => {
     <Link 
       to={`/product/${id}`} 
       onClick={handleClick}
-      className='text-gray-700 cursor-pointer block'
+      className='group block cursor-pointer'
     >
-      <div className='overflow-hidden'>
+      <div className='overflow-hidden bg-[#F9F9F7] aspect-[3/4]'>
         <img 
-          className='hover:scale-110 transition ease-in-out' 
+          className='w-full h-full object-cover grayscale opacity-90 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-[2s] ease-out' 
           src={image[0]} 
           alt={name} 
         />
       </div>
-      <p className='pt-3 pb-1 text-sm'>{name}</p>
-      <p className='text-sm font-medium'>{currency}{price}</p>
+      <div className='mt-6 flex flex-col items-center text-center'>
+        <p className='font-sans text-xs tracking-[0.2em] uppercase text-gray-500 mb-2'>{name}</p>
+        <p className='font-serif text-lg text-[#2A2A2A]'>{currency}{price}</p>
+      </div>
     </Link>
   )
 }
