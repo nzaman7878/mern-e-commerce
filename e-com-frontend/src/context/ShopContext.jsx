@@ -54,6 +54,7 @@ const ShopContextProvider = (props) => {
     }
 
     setCartItems(cartData);
+    toast.success("Added to Archive");
 
     if (token) {
       try {
@@ -184,13 +185,18 @@ const ShopContextProvider = (props) => {
       toast.error(error.message);
     }
   };
+
   useEffect(() => {
     if (!token && localStorage.getItem("token")) {
       setToken(localStorage.getItem("token"));
-      getUserCart(localStorage.getItem("token"));
     }
-  });
+  }, [token]);
 
+  useEffect(() => {
+    if (token) {
+      getUserCart(token);
+    }
+  }, [token]);
   const value = {
     products,
     currency,

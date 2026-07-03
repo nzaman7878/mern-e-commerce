@@ -46,7 +46,7 @@ const Navbar = () => {
 
         {/* Center: Logo */}
         <div className='flex-1 flex justify-center'>
-          <Link to='/'>
+          <Link to='/' onClick={() => window.scrollTo(0, 0)}>
             <img src={assets.logo} alt='logo' className='w-28 md:w-36 grayscale opacity-90' />
           </Link>
         </div>
@@ -58,9 +58,9 @@ const Navbar = () => {
           </button>
 
           <div className='group relative hidden sm:block'>
-            <Link to='/login' className='hover:opacity-70 transition-opacity block'>
-              <img onClick={() => token ? null : navigate('/login')} src={assets.profile_icon} alt='profile' className='w-4 md:w-5' />
-            </Link>
+            <div onClick={() => token ? null : navigate('/login')} className='hover:opacity-70 transition-opacity block cursor-pointer'>
+              <img src={assets.profile_icon} alt='profile' className='w-4 md:w-5' />
+            </div>
             {token && 
               <div className='group-hover:block hidden absolute right-0 pt-6'>
                 <div className='flex flex-col gap-3 w-40 py-4 px-6 bg-[#F9F9F7] border border-gray-200 shadow-xl text-gray-700 text-sm'>
@@ -72,9 +72,9 @@ const Navbar = () => {
             }
           </div>
 
-          <Link to='/cart' className='relative hover:opacity-70 transition-opacity'>
+          <Link to='/cart' className='relative flex items-center justify-center hover:opacity-70 transition-opacity'>
             <img src={assets.cart_icon} alt='cart' className='w-4 md:w-5' />
-            <p className='absolute -right-2 -bottom-2 text-center leading-4 bg-[#2A2A2A] text-[#F9F9F7] aspect-square rounded-full text-[9px] min-w-[1rem] w-auto h-4 px-1 flex items-center justify-center font-bold'>
+            <p className='absolute right-[-7px] bottom-[-7px] w-[18px] text-center leading-4 bg-[#2A2A2A] text-[#F9F9F7] aspect-square rounded-full text-[9px] flex items-center justify-center font-bold'>
               {getCartCount()}
             </p>
           </Link>

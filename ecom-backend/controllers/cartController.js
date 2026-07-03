@@ -1,24 +1,15 @@
-
-
-// add products to user cart 
-
-
-
 import userModel from "../models/userModel.js"
 
 const addToCart = async (req, res) => {
     try {
         const { userId, itemId, size } = req.body
         
-        
         const userData = await userModel.findById(userId)
-        let cartData = userData.cartData || {};
-        
+        let cartData = userData.cartData ? JSON.parse(JSON.stringify(userData.cartData)) : {};
         
         if (!cartData[itemId]) {
             cartData[itemId] = {};
         }
-        
         
         if (cartData[itemId][size]) {
             cartData[itemId][size] += 1;
@@ -43,23 +34,23 @@ const addToCart = async (req, res) => {
     }
 }
 
-
-
-const updateCart = async (req, res) =>{
-    // update user cart 
-    
+const updateCart = async (req, res) => {
     try {
-        
         const {userId, itemId, size, quantity} = req.body
 
         const userData = await userModel.findById(userId)
-        let cartData = await userData.cartData;
+        let cartData = userData.cartData ? JSON.parse(JSON.stringify(userData.cartData)) : {};
+
+        if (!cartData[itemId]) {
+            cartData[itemId] = {};
+        }
 
         cartData[itemId][size] = quantity
 
         await userModel.findByIdAndUpdate(userId, {cartData})
-        res.json({success: true,
-            message:"cart Updated"
+        res.json({
+            success: true,
+            message:"Cart Updated"
         })
 
     } catch (error) {
@@ -69,18 +60,14 @@ const updateCart = async (req, res) =>{
             message: error.message
         })
     }
-    
 }
 
-
-const getUserCart = async (req, res) =>{
-
+const getUserCart = async (req, res) => {
     try {
-
         const {userId} = req.body;
 
         const userData = await userModel.findById(userId)
-        let cartData = await userData.cartData;
+        let cartData = userData.cartData || {};
 
         res.json({
             success: true,
@@ -94,7 +81,6 @@ const getUserCart = async (req, res) =>{
             message: error.message
         })
     }
-    
 }
 
-export{addToCart, updateCart, getUserCart}
+export { addToCart, updateCart, getUserCart }
