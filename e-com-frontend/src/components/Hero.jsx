@@ -10,15 +10,18 @@ const Hero = () => {
         <div className='aura-glow bg-[#6F8466] w-[600px] h-[600px] rounded-full bottom-[-10%] left-[-10%] opacity-30 mix-blend-screen'></div>
       </div>
 
-      {/* Floating Glass Image layer */}
-      <div className='absolute right-0 top-0 w-3/4 md:w-1/2 h-full p-8 md:p-16'>
-        <div className='w-full h-full relative glass-panel rounded-3xl overflow-hidden rotate-1 hover:rotate-0 transition-transform duration-700 ease-out'>
+      {/* Seamless Faded Image layer */}
+      <div className='absolute right-0 top-0 w-[85%] md:w-[55%] h-full'>
+        <div className='w-full h-full relative overflow-hidden'>
           <img
-            className='w-full h-full object-cover opacity-80 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700 hover:scale-105'
+            className='w-full h-full object-cover object-[center_top] transition-transform duration-[2s] ease-out hover:scale-105'
+            style={{ 
+              WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 40%)', 
+              maskImage: 'linear-gradient(to right, transparent 0%, black 40%)' 
+            }}
             src={assets.hero_img}
             alt='Premium Collection'
           />
-          <div className='absolute inset-0 bg-gradient-to-l from-transparent to-[#F8F5F1] opacity-60'></div>
         </div>
       </div>
 
