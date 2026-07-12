@@ -14,18 +14,19 @@ const ProductItem = ({ id, name, price, image }) => {
     <Link 
       to={`/product/${id}`} 
       onClick={handleClick}
-      className='group block cursor-pointer'
+      className='group block cursor-pointer tactile-card glass-panel rounded-2xl overflow-hidden'
     >
-      <div className='overflow-hidden bg-[#F9F9F7] aspect-[3/4]'>
+      <div className='overflow-hidden bg-[#FDFBF8] aspect-[3/4] relative'>
         <img 
-          className='w-full h-full object-cover grayscale opacity-90 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-[2s] ease-out' 
+          className='w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:scale-110 group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-700 ease-out' 
           src={image[0]} 
           alt={name} 
         />
+        <div className='absolute inset-0 bg-gradient-to-t from-[#F8F5F1] to-transparent opacity-50 group-hover:opacity-20 transition-opacity duration-500'></div>
       </div>
-      <div className='mt-6 flex flex-col items-center text-center'>
-        <p className='font-sans text-xs tracking-[0.2em] uppercase text-gray-500 mb-2'>{name}</p>
-        <p className='font-serif text-lg text-[#2A2A2A]'>{currency}{price}</p>
+      <div className='p-6 flex flex-col items-center text-center'>
+        <p className='font-sans text-[10px] tracking-widest uppercase text-[#C96A3C] mb-2 font-medium'>{name}</p>
+        <p className='font-serif text-lg text-[#2C2723] group-hover:text-[#C96A3C] transition-colors duration-300'>{currency}{price}</p>
       </div>
     </Link>
   )

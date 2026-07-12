@@ -11,18 +11,24 @@ const LatestCollection = () => {
   }, [products]);
 
   return (
-    <div id="collection" className='my-32 px-6 md:px-12 lg:px-24'>
-      <div className='flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8'>
+    <div id="collection" className='relative my-32 px-6 md:px-12 lg:px-24'>
+      {/* Background Aura */}
+      <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[600px] bg-[#C96A3C] rounded-full blur-[150px] opacity-[0.05] pointer-events-none'></div>
+
+      <div className='flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8 relative z-10'>
         <div className='max-w-2xl'>
-          <h2 className='font-serif text-4xl md:text-6xl text-[#2A2A2A] mb-6'>
-            Curated <br /><span className='italic font-light text-gray-500'>Selections</span>
+          <h2 className='font-serif text-4xl md:text-6xl text-[#2C2723] mb-6 drop-shadow-lg'>
+            Curated <br /><span className='italic font-light text-[#C96A3C] opacity-90'>Selections</span>
           </h2>
-          <p className='text-sm text-gray-500 leading-relaxed font-sans max-w-md'>
-            Discover our latest collection of products designed to elevate your lifestyle. A blend of minimalist aesthetics and brutalist utility.
+          <p className='text-sm text-[#7B746E] leading-relaxed font-sans max-w-md'>
+            Discover our latest collection of products designed to elevate your lifestyle. A seamless blend of spatial computing aesthetics and modern utility.
           </p>
         </div>
         <div>
-           <button className='text-xs uppercase tracking-widest editorial-link whitespace-nowrap'>View Complete Archive</button>
+           <button className='group relative text-xs uppercase tracking-widest text-[#2C2723] whitespace-nowrap overflow-hidden px-6 py-3 glass-panel rounded-full hover:border-[#C96A3C]/40 transition-all'>
+             <span className='relative z-10'>View Complete Archive</span>
+             <div className='absolute inset-0 bg-gradient-to-r from-[#C96A3C]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+           </button>
         </div>
       </div>
 

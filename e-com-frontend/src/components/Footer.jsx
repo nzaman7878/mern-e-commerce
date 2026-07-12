@@ -3,16 +3,16 @@ import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
-    <div className='px-6 md:px-12 lg:px-24 py-20 mt-32 border-t border-[#2A2A2A]/10 bg-[#F9F9F7] text-[#2A2A2A]'>
+    <div className='px-6 md:px-12 lg:px-24 py-20 mt-32 border-t border-[#2C2723]/10 bg-[#F8F5F1] text-[#2C2723]'>
       <div className='flex flex-col md:flex-row justify-between gap-16'>
         
         {/* Brand / Logo Replacement */}
         <div className='md:w-1/2'>
           <h2 className='font-serif text-5xl md:text-7xl mb-8 leading-none'>
             Snazzy<br />
-            <span className='italic font-light text-gray-500'>Fit.</span>
+            <span className='italic font-light text-[#7B746E]'>Fit.</span>
           </h2>
-          <p className='font-sans text-xs tracking-widest uppercase text-gray-500 max-w-xs leading-loose'>
+          <p className='font-sans text-xs tracking-widest uppercase text-[#7B746E] max-w-xs leading-loose'>
             Curated essentials for the modern aesthetic. Designed with intent.
           </p>
         </div>
@@ -39,7 +39,7 @@ const Footer = () => {
         </div>
       </div>
 
-      <div className='mt-32 pt-8 border-t border-[#2A2A2A]/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-sans tracking-widest uppercase text-gray-400'>
+      <div className='mt-32 pt-8 border-t border-[#2C2723]/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-sans tracking-widest uppercase text-[#7B746E]'>
         <p>© 2026 SNAZZYFIT ARCHIVE.</p>
         <p>ALL RIGHTS RESERVED.</p>
       </div>

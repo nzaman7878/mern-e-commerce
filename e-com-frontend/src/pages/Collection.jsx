@@ -75,14 +75,16 @@ const Collection = () => {
   }, [sortType]);
 
   return (
-    <div className='flex flex-col md:flex-row gap-8 lg:gap-16 pt-32 px-6 md:px-12 lg:px-24 min-h-screen'>
+    <div className='relative flex flex-col md:flex-row gap-8 lg:gap-16 pt-32 px-6 md:px-12 lg:px-24 min-h-screen overflow-hidden'>
+      {/* Background Aura */}
+      <div className='absolute top-0 right-0 w-[800px] h-[800px] bg-[#C96A3C] rounded-full blur-[150px] opacity-[0.03] pointer-events-none translate-x-1/2 -translate-y-1/2'></div>
       
       {/* Editorial Sidebar Filter */}
-      <div className='w-full md:w-48 lg:w-64 shrink-0'>
-        <div className='sticky top-32'>
+      <div className='w-full md:w-48 lg:w-64 shrink-0 relative z-10'>
+        <div className='sticky top-32 glass-panel p-6 rounded-2xl'>
           <p
             onClick={() => setShowFilter(!showFilter)}
-            className='font-sans text-xs tracking-[0.2em] uppercase font-semibold flex items-center cursor-pointer gap-2 mb-8'
+            className='font-sans text-xs tracking-[0.2em] uppercase font-semibold flex items-center cursor-pointer gap-2 mb-8 text-[#2C2723]'
           >
             Filters
             <span className={`text-[10px] md:hidden transition-transform duration-300 ${showFilter ? 'rotate-90' : ''}`}>[+]</span>
@@ -91,12 +93,12 @@ const Collection = () => {
           <div className={`space-y-12 ${showFilter ? 'block' : 'hidden md:block'} transition-all`}>
             {/* Categories */}
             <div>
-              <p className='font-serif italic text-gray-400 mb-4'>Category</p>
-              <div className='flex flex-col gap-3 font-sans text-xs tracking-widest uppercase text-[#2A2A2A]'>
+              <p className='font-serif italic text-[#7B746E] mb-4'>Category</p>
+              <div className='flex flex-col gap-3 font-sans text-xs tracking-widest uppercase text-[#2C2723]'>
                 {['Men', 'Women', 'Kids'].map((cat) => (
                   <label key={cat} className='flex items-center gap-3 cursor-pointer group'>
                     <input
-                      className='appearance-none w-3 h-3 border border-[#2A2A2A] checked:bg-[#2A2A2A] flex items-center justify-center after:content-[""] checked:after:w-1 checked:after:h-1 checked:after:bg-[#F9F9F7] transition-colors cursor-pointer'
+                      className='appearance-none w-3 h-3 border border-[#2C2723] checked:bg-[#2C2723] flex items-center justify-center after:content-[""] checked:after:w-1 checked:after:h-1 checked:after:bg-[#F8F5F1] transition-colors cursor-pointer'
                       type='checkbox'
                       value={cat}
                       onChange={toggleCategory}
@@ -110,12 +112,12 @@ const Collection = () => {
 
             {/* Subcategories */}
             <div>
-              <p className='font-serif italic text-gray-400 mb-4'>Type</p>
-              <div className='flex flex-col gap-3 font-sans text-xs tracking-widest uppercase text-[#2A2A2A]'>
+              <p className='font-serif italic text-[#7B746E] mb-4'>Type</p>
+              <div className='flex flex-col gap-3 font-sans text-xs tracking-widest uppercase text-[#2C2723]'>
                 {['Topwear', 'Bottomwear', 'Winterwear'].map((type) => (
                   <label key={type} className='flex items-center gap-3 cursor-pointer group'>
                     <input
-                      className='appearance-none w-3 h-3 border border-[#2A2A2A] checked:bg-[#2A2A2A] flex items-center justify-center after:content-[""] checked:after:w-1 checked:after:h-1 checked:after:bg-[#F9F9F7] transition-colors cursor-pointer'
+                      className='appearance-none w-3 h-3 border border-[#2C2723] checked:bg-[#2C2723] flex items-center justify-center after:content-[""] checked:after:w-1 checked:after:h-1 checked:after:bg-[#F8F5F1] transition-colors cursor-pointer'
                       type='checkbox'
                       value={type}
                       onChange={toggleSubCategory}
@@ -131,23 +133,23 @@ const Collection = () => {
       </div>
 
       {/* Main Collection Area */}
-      <div className='flex-1'>
+      <div className='flex-1 relative z-10'>
         <div className='flex flex-col sm:flex-row sm:items-end justify-between mb-16 gap-6'>
-          <h1 className='font-serif text-5xl lg:text-7xl leading-none text-[#2A2A2A]'>
+          <h1 className='font-serif text-5xl lg:text-7xl leading-none text-[#2C2723] drop-shadow-lg'>
             Archive <br />
-            <span className='italic font-light text-gray-500'>Index.</span>
+            <span className='italic font-light text-[#C96A3C] opacity-90'>Index.</span>
           </h1>
           
-          <div className='flex items-center border-b border-[#2A2A2A] pb-1 w-max relative'>
+          <div className='flex items-center border-b border-[rgba(44,39,35,0.1)] pb-1 w-max relative'>
              <select 
                 onChange={(e)=> setSortType(e.target.value)} 
-                className='bg-transparent font-sans text-xs tracking-[0.2em] uppercase text-[#2A2A2A] focus:outline-none cursor-pointer appearance-none pr-6 w-full'
+                className='bg-transparent font-sans text-xs tracking-[0.2em] uppercase text-[#2C2723] focus:outline-none cursor-pointer appearance-none pr-6 w-full'
              >
-                <option value='relevant'>Sort: Relevant</option>
-                <option value='low - high'>Sort: Ascending</option>
-                <option value='high - low'>Sort: Descending</option>
+                <option className='bg-[#FDFBF8] text-[#2C2723]' value='relevant'>Sort: Relevant</option>
+                <option className='bg-[#FDFBF8] text-[#2C2723]' value='low - high'>Sort: Ascending</option>
+                <option className='bg-[#FDFBF8] text-[#2C2723]' value='high - low'>Sort: Descending</option>
              </select>
-             <span className='absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[8px]'>▼</span>
+             <span className='absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[8px] text-[#2C2723]'>▼</span>
           </div>
         </div>
 

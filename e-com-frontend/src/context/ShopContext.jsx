@@ -180,11 +180,10 @@ const ShopContextProvider = (props) => {
       if (response.data.success) {
         setUserData(response.data.user);
       } else {
-        toast.error(response.data.message);
+        console.warn(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
     }
   };
 
@@ -199,10 +198,11 @@ const ShopContextProvider = (props) => {
       );
       if (response.data.success) {
         setCartItems(response.data.cartData);
+      } else {
+        console.warn(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
     }
   };
 

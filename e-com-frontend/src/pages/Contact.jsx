@@ -4,12 +4,12 @@ import NewsletterBox from '../components/NewsletterBox'
 
 const Contact = () => {
   return (
-    <div className='bg-[#F9F9F7] text-[#2A2A2A] min-h-screen pt-32 pb-24'>
+    <div className='bg-[#F8F5F1] text-[#2C2723] min-h-screen pt-32 pb-24'>
       
       {/* Header Section */}
       <div className='text-center px-6 md:px-24 mb-24'>
         <h1 className='font-serif text-5xl lg:text-7xl leading-none'>
-          Reach <span className='italic font-light text-gray-400'>Out.</span>
+          Reach <span className='italic font-light text-[#7B746E]'>Out.</span>
         </h1>
       </div>
       
@@ -25,7 +25,7 @@ const Contact = () => {
         <div className='w-full md:w-1/2 flex flex-col justify-center gap-12 text-gray-600 font-serif text-lg leading-loose'>
           
           <div>
-            <h3 className='font-sans text-xs tracking-widest uppercase text-[#2A2A2A] mb-4'>The Studio</h3>
+            <h3 className='font-sans text-xs tracking-widest uppercase text-[#2C2723] mb-4'>The Studio</h3>
             <p>
               78432 Gauhati Station <br /> 
               Chandmaari 408, India
@@ -33,7 +33,7 @@ const Contact = () => {
           </div>
 
           <div>
-            <h3 className='font-sans text-xs tracking-widest uppercase text-[#2A2A2A] mb-4'>Direct Line</h3>
+            <h3 className='font-sans text-xs tracking-widest uppercase text-[#2C2723] mb-4'>Direct Line</h3>
             <p>
               Tel: (+91) 576-372-839 <br />
               Email: admin@snazzyfit.com
@@ -41,12 +41,12 @@ const Contact = () => {
           </div>
 
           <div>
-            <h3 className='font-sans text-xs tracking-widest uppercase text-[#2A2A2A] mb-4'>Careers</h3>
+            <h3 className='font-sans text-xs tracking-widest uppercase text-[#2C2723] mb-4'>Careers</h3>
             <p className='mb-8'>
               Join our passionate team and help us revolutionize the fashion industry. 
               Discover exciting career opportunities and grow with us.
             </p>
-            <button className='bg-transparent border border-[#2A2A2A] text-[#2A2A2A] px-12 py-4 font-sans text-xs tracking-[0.2em] uppercase hover:bg-[#2A2A2A] hover:text-[#F9F9F7] transition-colors'>
+            <button className='bg-transparent border border-[#2C2723] text-[#2C2723] px-12 py-4 font-sans text-xs tracking-[0.2em] uppercase hover:bg-[#2C2723] hover:text-[#F8F5F1] transition-colors'>
               Explore Roles
             </button>
           </div>

@@ -29,22 +29,22 @@ const Product = () => {
 
   if (productData === null) {
     return (
-      <div className="flex justify-center items-center h-screen bg-[#F9F9F7]">
-        <p className="font-serif italic text-2xl text-gray-400">Item not found in archive.</p>
+      <div className="flex justify-center items-center h-screen bg-[#F8F5F1]">
+        <p className="font-serif italic text-2xl text-[#7B746E]">Item not found in archive.</p>
       </div>
     );
   }
 
   if (!productData) {
     return (
-      <div className="flex justify-center items-center h-screen bg-[#F9F9F7]">
-        <div className="animate-spin rounded-full h-8 w-8 border-t border-[#2A2A2A]"></div>
+      <div className="flex justify-center items-center h-screen bg-[#F8F5F1]">
+        <div className="animate-spin rounded-full h-8 w-8 border-t border-[#2C2723]"></div>
       </div>
     );
   }
 
   return (
-    <div className='bg-[#F9F9F7] text-[#2A2A2A] transition-opacity ease-in duration-500 opacity-100 min-h-screen pt-32 pb-24'>
+    <div className='bg-[#F8F5F1] text-[#2C2723] transition-opacity ease-in duration-500 opacity-100 min-h-screen pt-32 pb-24'>
       
       <div className='flex flex-col md:flex-row gap-12 lg:gap-24 px-6 md:px-12 lg:px-24'>
         
@@ -63,11 +63,11 @@ const Product = () => {
 
         {/* Sticky Product Info */}
         <div className='w-full md:w-2/5'>
-          <div className='md:sticky md:top-32'>
+          <div className='md:sticky md:top-32 max-h-[calc(100vh-8rem)] overflow-y-auto pb-8'>
             <div className='mb-12'>
-              <p className='font-sans text-xs tracking-[0.2em] uppercase text-gray-500 mb-4'>Archive / {productData.category}</p>
+              <p className='font-sans text-xs tracking-[0.2em] uppercase text-[#7B746E] mb-4'>Archive / {productData.category}</p>
               <h1 className='font-serif text-5xl lg:text-7xl leading-none mb-6'>{productData.name}</h1>
-              <p className='font-serif text-3xl italic text-gray-500'>
+              <p className='font-serif text-3xl italic text-[#7B746E]'>
                 {currency}{productData.price.toLocaleString()}
               </p>
             </div>
@@ -82,7 +82,7 @@ const Product = () => {
                 {productData.sizes.map((item, index) => (
                   <button 
                     onClick={() => setSelectedSize(item)} 
-                    className={`font-sans text-sm w-12 h-12 border ${item === selectedSize ? 'border-[#2A2A2A] bg-[#2A2A2A] text-[#F9F9F7]' : 'border-gray-300 hover:border-[#2A2A2A]'} transition-colors`} 
+                    className={`font-sans text-sm w-12 h-12 border ${item === selectedSize ? 'border-[#2C2723] bg-[#2C2723] text-[#F8F5F1]' : 'border-gray-300 hover:border-[#2C2723]'} transition-colors`} 
                     key={index}
                   >
                     {item}
@@ -93,13 +93,13 @@ const Product = () => {
             
             <button  
               onClick={() => addToCart(productData._id, selectedSize)}
-              className='w-full bg-[#2A2A2A] text-[#F9F9F7] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+              className='w-full bg-[#2C2723] text-[#F8F5F1] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
               disabled={!selectedSize}
             >
               {selectedSize ? 'Add to Archive' : 'Select Size'}
             </button>
             
-            <div className='mt-16 pt-8 border-t border-[#2A2A2A]/10 text-xs font-sans tracking-widest uppercase text-gray-500 flex flex-col gap-4'>
+            <div className='mt-16 pt-8 border-t border-[#2C2723]/10 text-xs font-sans tracking-widest uppercase text-[#7B746E] flex flex-col gap-4'>
               <p>100% Original Documented Piece.</p>
               <p>Cash on delivery available.</p>
               <p>7-Day Return Policy.</p>
@@ -110,15 +110,15 @@ const Product = () => {
 
       {/* Description & Review Section */}
       <div className='mt-32 px-6 md:px-12 lg:px-24 max-w-4xl'>
-        <div className='flex gap-12 border-b border-[#2A2A2A]/10 pb-4 mb-8'>
+        <div className='flex gap-12 border-b border-[#2C2723]/10 pb-4 mb-8'>
           <button 
-            className={`font-sans text-xs tracking-widest uppercase ${activeTab === 'description' ? 'text-[#2A2A2A] font-bold' : 'text-gray-400 hover:text-gray-600'}`}
+            className={`font-sans text-xs tracking-widest uppercase ${activeTab === 'description' ? 'text-[#2C2723] font-bold' : 'text-[#7B746E] hover:text-gray-600'}`}
             onClick={() => setActiveTab('description')}
           >
             Details
           </button>
           <button 
-            className={`font-sans text-xs tracking-widest uppercase ${activeTab === 'reviews' ? 'text-[#2A2A2A] font-bold' : 'text-gray-400 hover:text-gray-600'}`}
+            className={`font-sans text-xs tracking-widest uppercase ${activeTab === 'reviews' ? 'text-[#2C2723] font-bold' : 'text-[#7B746E] hover:text-gray-600'}`}
             onClick={() => setActiveTab('reviews')}
           >
             Reflections (122)
@@ -141,7 +141,7 @@ const Product = () => {
             </div>
           ) : (
             <div>
-              <p className='italic text-gray-400'>Reflections are currently being curated.</p>
+              <p className='italic text-[#7B746E]'>Reflections are currently being curated.</p>
             </div>
           )}
         </div>

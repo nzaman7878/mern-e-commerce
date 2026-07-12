@@ -100,7 +100,7 @@ const PlaceOrder = () => {
   };
 
   return (
-    <form onSubmit={onSubmitHandler} className='px-6 md:px-12 lg:px-24 pt-32 pb-24 min-h-screen bg-[#F9F9F7] text-[#2A2A2A]'>
+    <form onSubmit={onSubmitHandler} className='px-6 md:px-12 lg:px-24 pt-32 pb-24 min-h-screen bg-[#F8F5F1] text-[#2C2723]'>
       
       <div className='flex flex-col lg:flex-row justify-between gap-24'>
         
@@ -110,50 +110,50 @@ const PlaceOrder = () => {
           
           <div className='flex gap-8'>
             <div className='relative w-full'>
-               <input required onChange={onChangeHandler} name='firstName' value={formData.firstName} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
-               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">First Name</label>
+               <input required onChange={onChangeHandler} name='firstName' value={formData.firstName} type="text" placeholder=" " className="peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">First Name</label>
             </div>
             <div className='relative w-full'>
-               <input required onChange={onChangeHandler} name='lastName' value={formData.lastName} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
-               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Last Name</label>
+               <input required onChange={onChangeHandler} name='lastName' value={formData.lastName} type="text" placeholder=" " className="peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">Last Name</label>
             </div>
           </div>
           
           <div className='relative w-full'>
-             <input required onChange={onChangeHandler} name='email' value={formData.email} type="email" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
-             <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Email Address</label>
+             <input required onChange={onChangeHandler} name='email' value={formData.email} type="email" placeholder=" " className="peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm" />
+             <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">Email Address</label>
           </div>
           
           <div className='relative w-full'>
-             <input required onChange={onChangeHandler} name='street' value={formData.street} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
-             <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Street Address</label>
+             <input required onChange={onChangeHandler} name='street' value={formData.street} type="text" placeholder=" " className="peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm" />
+             <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">Street Address</label>
           </div>
           
           <div className='flex gap-8'>
             <div className='relative w-full'>
-               <input required onChange={onChangeHandler} name='city' value={formData.city} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
-               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">City</label>
+               <input required onChange={onChangeHandler} name='city' value={formData.city} type="text" placeholder=" " className="peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">City</label>
             </div>
             <div className='relative w-full'>
-               <input required onChange={onChangeHandler} name='state' value={formData.state} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
-               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">State / Province</label>
+               <input required onChange={onChangeHandler} name='state' value={formData.state} type="text" placeholder=" " className="peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">State / Province</label>
             </div>
           </div>
           
           <div className='flex gap-8'>
             <div className='relative w-full'>
-               <input required onChange={onChangeHandler} name='zipcode' value={formData.zipcode} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
-               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Zip Code</label>
+               <input required onChange={onChangeHandler} name='zipcode' value={formData.zipcode} type="text" placeholder=" " className="peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">Zip Code</label>
             </div>
             <div className='relative w-full'>
-               <input required onChange={onChangeHandler} name='country' value={formData.country} type="text" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
-               <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Country</label>
+               <input required onChange={onChangeHandler} name='country' value={formData.country} type="text" placeholder=" " className="peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm" />
+               <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">Country</label>
             </div>
           </div>
           
           <div className='relative w-full'>
-             <input required onChange={onChangeHandler} name='phone' value={formData.phone} type="tel" placeholder=" " className="peer w-full border-b border-[#2A2A2A]/30 py-4 bg-transparent outline-none focus:border-[#2A2A2A] transition-colors font-sans text-sm" />
-             <label className="absolute left-0 top-4 text-gray-400 font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2A2A2A] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2A2A2A] pointer-events-none">Phone Number</label>
+             <input required onChange={onChangeHandler} name='phone' value={formData.phone} type="tel" placeholder=" " className="peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm" />
+             <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">Phone Number</label>
           </div>
         </div>
 
@@ -165,38 +165,38 @@ const PlaceOrder = () => {
             </div>
             
             <div className='mt-12'>
-              <h3 className='font-sans text-xs tracking-[0.2em] uppercase mb-8 border-b border-[#2A2A2A]/10 pb-4'>Payment Method</h3>
+              <h3 className='font-sans text-xs tracking-[0.2em] uppercase mb-8 border-b border-[#2C2723]/10 pb-4'>Payment Method</h3>
               
               <div className='flex flex-col gap-4'>
                 <div 
                   onClick={() => setMethod('stripe')} 
-                  className={`flex items-center justify-between p-4 cursor-pointer border transition-colors ${method === 'stripe' ? 'border-[#2A2A2A] bg-[#2A2A2A] text-[#F9F9F7]' : 'border-[#2A2A2A]/20 hover:border-[#2A2A2A]'}`}
+                  className={`flex items-center justify-between p-4 cursor-pointer border transition-colors ${method === 'stripe' ? 'border-[#2C2723] bg-[#2C2723] text-[#F8F5F1]' : 'border-[#2C2723]/20 hover:border-[#2C2723]'}`}
                 >
                   <span className='font-sans text-xs tracking-widest uppercase'>Credit Card (Stripe)</span>
-                  <div className={`w-3 h-3 rounded-full border ${method === 'stripe' ? 'border-[#F9F9F7] bg-[#F9F9F7]' : 'border-[#2A2A2A]/30'}`}></div>
+                  <div className={`w-3 h-3 rounded-full border ${method === 'stripe' ? 'border-[#F8F5F1] bg-[#F8F5F1]' : 'border-[#2C2723]/30'}`}></div>
                 </div>
                 
                 <div 
                   onClick={() => setMethod('razorpay')} 
-                  className={`flex items-center justify-between p-4 cursor-pointer border transition-colors ${method === 'razorpay' ? 'border-[#2A2A2A] bg-[#2A2A2A] text-[#F9F9F7]' : 'border-[#2A2A2A]/20 hover:border-[#2A2A2A]'}`}
+                  className={`flex items-center justify-between p-4 cursor-pointer border transition-colors ${method === 'razorpay' ? 'border-[#2C2723] bg-[#2C2723] text-[#F8F5F1]' : 'border-[#2C2723]/20 hover:border-[#2C2723]'}`}
                 >
                   <span className='font-sans text-xs tracking-widest uppercase'>Razorpay</span>
-                  <div className={`w-3 h-3 rounded-full border ${method === 'razorpay' ? 'border-[#F9F9F7] bg-[#F9F9F7]' : 'border-[#2A2A2A]/30'}`}></div>
+                  <div className={`w-3 h-3 rounded-full border ${method === 'razorpay' ? 'border-[#F8F5F1] bg-[#F8F5F1]' : 'border-[#2C2723]/30'}`}></div>
                 </div>
                 
                 <div 
                   onClick={() => setMethod('cod')} 
-                  className={`flex items-center justify-between p-4 cursor-pointer border transition-colors ${method === 'cod' ? 'border-[#2A2A2A] bg-[#2A2A2A] text-[#F9F9F7]' : 'border-[#2A2A2A]/20 hover:border-[#2A2A2A]'}`}
+                  className={`flex items-center justify-between p-4 cursor-pointer border transition-colors ${method === 'cod' ? 'border-[#2C2723] bg-[#2C2723] text-[#F8F5F1]' : 'border-[#2C2723]/20 hover:border-[#2C2723]'}`}
                 >
                   <span className='font-sans text-xs tracking-widest uppercase'>Cash on Delivery</span>
-                  <div className={`w-3 h-3 rounded-full border ${method === 'cod' ? 'border-[#F9F9F7] bg-[#F9F9F7]' : 'border-[#2A2A2A]/30'}`}></div>
+                  <div className={`w-3 h-3 rounded-full border ${method === 'cod' ? 'border-[#F8F5F1] bg-[#F8F5F1]' : 'border-[#2C2723]/30'}`}></div>
                 </div>
               </div>
               
               <div className='mt-12'>
                 <button 
                   type="submit"
-                  className='w-full bg-[#2A2A2A] text-[#F9F9F7] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                  className='w-full bg-[#2C2723] text-[#F8F5F1] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
                   disabled={!method}
                 >
                   Confirm Order

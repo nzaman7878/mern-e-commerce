@@ -28,10 +28,10 @@ const Cart = () => {
   }, [cartItems,products]);
 
   return (
-    <div className='bg-[#F9F9F7] text-[#2A2A2A] min-h-screen pt-32 px-6 md:px-12 lg:px-24'>
+    <div className='bg-[#F8F5F1] text-[#2C2723] min-h-screen pt-32 px-6 md:px-12 lg:px-24'>
       <div className='mb-24'>
         <h1 className='font-serif text-5xl lg:text-7xl leading-none'>
-          Your <span className='italic font-light text-gray-400'>Bag.</span>
+          Your <span className='italic font-light text-[#7B746E]'>Bag.</span>
         </h1>
       </div>
 
@@ -47,7 +47,7 @@ const Cart = () => {
             return (
               <div 
                 key={index} 
-                className='py-8 border-b border-[#2A2A2A]/10 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto] items-center gap-8 group'
+                className='py-8 border-b border-[#2C2723]/10 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto] items-center gap-8 group'
               >
                 <div className='flex items-center gap-8'>
                   <img className='w-24 md:w-32 object-cover aspect-[4/5]' src={productData.image[0]} alt="" />
@@ -57,13 +57,13 @@ const Cart = () => {
                     </p>
                     <div className='flex items-center gap-6 font-sans text-xs tracking-widest uppercase'>
                       <p className='font-serif italic text-base'>{currency}{productData.price}</p>
-                      <p className='border border-[#2A2A2A] px-3 py-1'>{item.size}</p>
+                      <p className='border border-[#2C2723] px-3 py-1'>{item.size}</p>
                     </div>
                   </div>
                 </div>
                 
                 <input 
-                  className='bg-transparent border-b border-[#2A2A2A]/30 w-16 px-2 py-2 text-center font-sans text-xs tracking-widest outline-none focus:border-[#2A2A2A] transition-colors' 
+                  className='bg-transparent border-b border-[#2C2723]/30 w-16 px-2 py-2 text-center font-sans text-xs tracking-widest outline-none focus:border-[#2C2723] transition-colors' 
                   type="number" 
                   min={1} 
                   value={item.quantity}
@@ -72,7 +72,7 @@ const Cart = () => {
                 
                 <button 
                   onClick={() => updateQuantity(item._id, item.size, 0)} 
-                  className='font-sans text-[10px] tracking-widest uppercase text-gray-400 hover:text-[#2A2A2A] transition-colors'
+                  className='font-sans text-[10px] tracking-widest uppercase text-[#7B746E] hover:text-[#2C2723] transition-colors'
                 >
                   Remove
                 </button>
@@ -82,8 +82,8 @@ const Cart = () => {
 
           {/* Empty cart message */}
           {cartData.length === 0 && (
-            <div className='py-24 border-b border-[#2A2A2A]/10'>
-              <p className='font-sans text-sm tracking-widest uppercase text-gray-400'>Your bag is empty.</p>
+            <div className='py-24 border-b border-[#2C2723]/10'>
+              <p className='font-sans text-sm tracking-widest uppercase text-[#7B746E]'>Your bag is empty.</p>
             </div>
           )}
         </div>
@@ -92,7 +92,7 @@ const Cart = () => {
         <div className='w-full lg:w-[450px] shrink-0'>
           <CartTotal />
           <div className='mt-12'>
-            <button onClick={()=>navigate('/place-order')} className='w-full bg-[#2A2A2A] text-[#F9F9F7] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors'>
+            <button onClick={()=>navigate('/place-order')} className='w-full bg-[#2C2723] text-[#F8F5F1] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors'>
               Proceed to Checkout
             </button>
           </div>

@@ -4,12 +4,12 @@ import NewsletterBox from '../components/NewsletterBox'
 
 const About = () => {
   return (
-    <div className='bg-[#F9F9F7] text-[#2A2A2A] min-h-screen pt-32 pb-24'>
+    <div className='bg-[#F8F5F1] text-[#2C2723] min-h-screen pt-32 pb-24'>
       
       {/* Header Section */}
       <div className='text-center px-6 md:px-24 mb-24'>
         <h1 className='font-serif text-5xl lg:text-7xl leading-none'>
-          The <span className='italic font-light text-gray-400'>Story.</span>
+          The <span className='italic font-light text-[#7B746E]'>Story.</span>
         </h1>
       </div>
       
@@ -32,7 +32,7 @@ const About = () => {
           </p>
           
           <div>
-            <h3 className='font-sans text-xs tracking-widest uppercase text-[#2A2A2A] mb-4'>Our Mission</h3>
+            <h3 className='font-sans text-xs tracking-widest uppercase text-[#2C2723] mb-4'>Our Mission</h3>
             <p>
               Our mission at SnazzyFit is to empower customers with choice, convenience, and confidence in their fashion decisions. We strive to provide an exceptional shopping experience through our carefully curated collections, competitive prices, and outstanding customer service.
             </p>
@@ -42,23 +42,23 @@ const About = () => {
       
       {/* Features Section */}
       <div className='px-6 md:px-12 lg:px-24 mb-32'>
-        <div className='mb-16 border-b border-[#2A2A2A]/10 pb-8'>
-          <h2 className='font-serif text-4xl lg:text-5xl'>Why <span className='italic text-gray-400'>Us.</span></h2>
+        <div className='mb-16 border-b border-[#2C2723]/10 pb-8'>
+          <h2 className='font-serif text-4xl lg:text-5xl'>Why <span className='italic text-[#7B746E]'>Us.</span></h2>
         </div>
         
         <div className='grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-24'>
           <div className='flex flex-col gap-6'>
-            <h3 className='font-sans text-xs tracking-widest uppercase border-b border-[#2A2A2A] pb-2 inline-block w-max'>Quality Assurance</h3>
+            <h3 className='font-sans text-xs tracking-widest uppercase border-b border-[#2C2723] pb-2 inline-block w-max'>Quality Assurance</h3>
             <p className='text-gray-600 font-serif leading-relaxed'>Our team of experts ensures that every product meets our highest standards of quality and craftsmanship. We partner only with trusted suppliers and conduct thorough quality checks before items reach our customers.</p>
           </div>
           
           <div className='flex flex-col gap-6'>
-            <h3 className='font-sans text-xs tracking-widest uppercase border-b border-[#2A2A2A] pb-2 inline-block w-max'>Convenience</h3>
+            <h3 className='font-sans text-xs tracking-widest uppercase border-b border-[#2C2723] pb-2 inline-block w-max'>Convenience</h3>
             <p className='text-gray-600 font-serif leading-relaxed'>With our user-friendly interface and hassle-free ordering process, shopping has never been easier. Enjoy features like quick checkout, multiple payment options, and fast, reliable delivery right to your doorstep.</p>
           </div>
           
           <div className='flex flex-col gap-6'>
-            <h3 className='font-sans text-xs tracking-widest uppercase border-b border-[#2A2A2A] pb-2 inline-block w-max'>Exceptional Service</h3>
+            <h3 className='font-sans text-xs tracking-widest uppercase border-b border-[#2C2723] pb-2 inline-block w-max'>Exceptional Service</h3>
             <p className='text-gray-600 font-serif leading-relaxed'>Our team of dedicated professionals is here to assist you every step of the way. From product inquiries to post-purchase support, we're committed to ensuring your complete satisfaction with every interaction.</p>
           </div>
         </div>

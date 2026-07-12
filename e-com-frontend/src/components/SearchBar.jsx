@@ -19,7 +19,7 @@ const SearchBar = () => {
   if (!showSearch || !visible) return null;
 
   return (
-    <div className='fixed top-0 left-0 w-full z-50 bg-[#F9F9F7]/95 backdrop-blur-md py-12 px-6 md:px-24 shadow-sm border-b border-[#2A2A2A]/10 animate-fade-in'>
+    <div className='fixed top-0 left-0 w-full z-50 bg-[#F8F5F1]/95 backdrop-blur-md py-12 px-6 md:px-24 shadow-sm border-b border-[#2C2723]/10 animate-fade-in'>
       
       <div className='max-w-4xl mx-auto relative flex items-center'>
         
@@ -27,7 +27,7 @@ const SearchBar = () => {
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className='w-full bg-transparent border-b-2 border-[#2A2A2A] py-4 text-3xl md:text-5xl font-serif italic text-[#2A2A2A] outline-none placeholder:text-gray-300'
+          className='w-full bg-transparent border-b-2 border-[#2C2723] py-4 text-3xl md:text-5xl font-serif italic text-[#2C2723] outline-none placeholder:text-gray-300'
           type='text'
           placeholder='Search the archive...'
           autoFocus

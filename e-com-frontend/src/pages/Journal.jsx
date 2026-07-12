@@ -4,14 +4,14 @@ import { assets } from '../assets/frontend_assets/assets'
 
 const Journal = () => {
   return (
-    <div className='bg-[#F9F9F7] text-[#2A2A2A] min-h-screen pt-32 pb-24'>
+    <div className='bg-[#F8F5F1] text-[#2C2723] min-h-screen pt-32 pb-24'>
       
       {/* Header Section */}
       <div className='text-center px-6 md:px-24 mb-24'>
         <h1 className='font-serif text-5xl lg:text-7xl leading-none'>
-          The <span className='italic font-light text-gray-400'>Journal.</span>
+          The <span className='italic font-light text-[#7B746E]'>Journal.</span>
         </h1>
-        <p className='font-sans text-xs tracking-widest uppercase text-gray-500 mt-8'>
+        <p className='font-sans text-xs tracking-widest uppercase text-[#7B746E] mt-8'>
           Editorial / Fall 2026
         </p>
       </div>
@@ -30,7 +30,7 @@ const Journal = () => {
           <p className='font-serif text-lg leading-loose text-gray-600 mb-12'>
             In an era of excess, we find sanctuary in the essential. The new Fall collection explores the intersection of brutalist architecture and soft, sustainable fabrics. We strip away the unnecessary to reveal the pure form beneath. 
           </p>
-          <button className='bg-transparent border border-[#2A2A2A] text-[#2A2A2A] px-12 py-4 font-sans text-xs tracking-[0.2em] uppercase hover:bg-[#2A2A2A] hover:text-[#F9F9F7] transition-colors'>
+          <button className='bg-transparent border border-[#2C2723] text-[#2C2723] px-12 py-4 font-sans text-xs tracking-[0.2em] uppercase hover:bg-[#2C2723] hover:text-[#F8F5F1] transition-colors'>
             Read Full Essay
           </button>
         </div>
@@ -48,12 +48,12 @@ const Journal = () => {
                 alt="Studio visit" 
               />
             </div>
-            <h3 className='font-sans text-xs tracking-widest uppercase text-gray-400 mb-4'>Behind the Seams</h3>
+            <h3 className='font-sans text-xs tracking-widest uppercase text-[#7B746E] mb-4'>Behind the Seams</h3>
             <h2 className='font-serif text-3xl mb-4'>The Studio Visit</h2>
             <p className='font-serif text-gray-600 leading-relaxed mb-6'>
               An exclusive look into our atelier in the heart of the city, where every piece is conceptualized and prototyped.
             </p>
-            <span className='font-sans text-[10px] tracking-widest uppercase border-b border-[#2A2A2A] pb-1 w-max'>Read More</span>
+            <span className='font-sans text-[10px] tracking-widest uppercase border-b border-[#2C2723] pb-1 w-max'>Read More</span>
           </div>
 
           <div className='flex flex-col group cursor-pointer'>
@@ -64,12 +64,12 @@ const Journal = () => {
                 alt="Sustainable practices" 
               />
             </div>
-            <h3 className='font-sans text-xs tracking-widest uppercase text-gray-400 mb-4'>Sustainability</h3>
+            <h3 className='font-sans text-xs tracking-widest uppercase text-[#7B746E] mb-4'>Sustainability</h3>
             <h2 className='font-serif text-3xl mb-4'>Sourcing with Intent</h2>
             <p className='font-serif text-gray-600 leading-relaxed mb-6'>
               Our commitment to ethical fashion starts with the raw materials. How we choose our fabrics for longevity.
             </p>
-            <span className='font-sans text-[10px] tracking-widest uppercase border-b border-[#2A2A2A] pb-1 w-max'>Read More</span>
+            <span className='font-sans text-[10px] tracking-widest uppercase border-b border-[#2C2723] pb-1 w-max'>Read More</span>
           </div>
 
         </div>
