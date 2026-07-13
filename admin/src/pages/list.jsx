@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { backendUrl, currency } from '../App'
 import { toast } from 'react-toastify'
@@ -64,7 +65,10 @@ const List = ({ token }) => {
             <p>{item.name}</p>
             <p>{item.category}</p>
             <p>{currency}{item.price}</p>
-            <p onClick={() => removeProduct(item._id)} className='text-right md:text-center cursor-pointer text-lg text-red-500'>X</p>
+            <div className='flex justify-end md:justify-center gap-2'>
+              <Link to={`/edit/${item._id}`} className='text-blue-500 cursor-pointer text-sm font-semibold'>Edit</Link>
+              <p onClick={() => removeProduct(item._id)} className='cursor-pointer text-lg text-red-500'>X</p>
+            </div>
           </div>
         ))}
       </div>

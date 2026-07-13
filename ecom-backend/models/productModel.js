@@ -56,7 +56,7 @@ const productSchema = new mongoose.Schema({
 
 // Add indexes for better query performance
 productSchema.index({ category: 1, subCategory: 1 });
-productSchema.index({ bestSeller: -1 });
+productSchema.index({ bestseller: -1 });
 productSchema.index({ price: 1 });
 
 const productModel = mongoose.models.product || mongoose.model("product", productSchema);

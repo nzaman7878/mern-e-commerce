@@ -1,6 +1,6 @@
 import {v2 as cloudinary} from 'cloudinary';
 
-import productModel from '../models/productModdel.js';
+import productModel from '../models/productModel.js';
 
 // Function to add a new product
 const addProduct = async (req, res) => {
@@ -130,7 +130,7 @@ const removeProduct = async (req, res) => {
 
 const singleProduct = async (req, res) => {
   try {
-    const { productId } = req.body;
+    const productId = req.body?.productId || req.query?.productId;
 
     if (!productId) {
       return res.status(400).json({
@@ -162,5 +162,65 @@ const singleProduct = async (req, res) => {
   }
 };
 
+// Function to update a product
+const updateProduct = async (req, res) => {
+  try {
+    const { id, name, description, price, category, subCategory, sizes, bestseller } = req.body;
 
-export { addProduct, listProducts, removeProduct, singleProduct };
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'Product ID is required.' });
+    }
+
+    const image1 = req.files && req.files.image1 && req.files.image1[0];
+    const image2 = req.files && req.files.image2 && req.files.image2[0];
+    const image3 = req.files && req.files.image3 && req.files.image3[0];
+    const image4 = req.files && req.files.image4 && req.files.image4[0];
+
+    const images = [image1, image2, image3, image4].filter(item => item !== undefined);
+
+    let productData = {
+      name,
+      description,
+      price: Number(price),
+      bestseller: bestseller === 'true' || bestseller === true,
+      category,
+      subCategory,
+      sizes: sizes ? JSON.parse(sizes) : [],
+      updatedAt: new Date()
+    };
+
+    if (images.length > 0) {
+      const imagesUrl = await Promise.all(
+        images.map(async (item) => {
+          const result = await cloudinary.uploader.upload(item.path, {
+            resource_type: 'image'
+          });
+          return result.secure_url;
+        })
+      );
+      productData.image = imagesUrl;
+    }
+
+    const updatedProduct = await productModel.findByIdAndUpdate(id, productData, { new: true });
+
+    if (!updatedProduct) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'Product updated successfully',
+      product: updatedProduct
+    });
+
+  } catch (error) {
+    console.error('Error in Update Product:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Something went wrong while updating product'
+    });
+  }
+};
+
+
+export { addProduct, listProducts, removeProduct, singleProduct, updateProduct };
