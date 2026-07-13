@@ -15,7 +15,7 @@ import Login from './components/Login'
 
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
-export const currency = '$'
+export const currency = '₹'
 
 
 const App = () => {
