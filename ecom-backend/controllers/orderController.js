@@ -176,7 +176,12 @@ const updateStatus = async (req, res) => {
     try {
         const {orderId, status} = req.body
         
-        await orderModel.findByIdAndUpdate(orderId, {status})
+        const updateData = {status}
+        if (status === 'Delivered') {
+            updateData.payment = true
+        }
+        
+        await orderModel.findByIdAndUpdate(orderId, updateData)
         res.json({success: true, message: 'Status Updated'})
         
     } catch (error) {

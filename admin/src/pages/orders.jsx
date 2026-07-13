@@ -60,13 +60,7 @@ const Orders = ({ token }) => {
       )
 
       if (response.data.success) {
-        setOrders(prevOrders => 
-          prevOrders.map(order => 
-            order._id === orderId 
-              ? { ...order, status: newStatus }
-              : order
-          )
-        )
+        await fetchAllOrders(); // Ensure full data sync with backend
       }
     } catch (error) {
       console.error('Error updating order status:', error)
