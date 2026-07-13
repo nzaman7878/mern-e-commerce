@@ -7,6 +7,12 @@ const Orders = ({ token }) => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  
+  // Search, Filter and Pagination State
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('All')
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   const fetchAllOrders = async () => {
     if (!token) {
@@ -27,10 +33,10 @@ const Orders = ({ token }) => {
         }
       )
       
-      console.log(response.data)
-      
       if (response.data.success) {
-        setOrders(response.data.orders || response.data.data || [])
+        // Reverse to show newest orders first (assuming they are returned sequentially)
+        const fetchedOrders = response.data.orders || response.data.data || []
+        setOrders(fetchedOrders.reverse())
       }
       
     } catch (error) {
@@ -82,7 +88,28 @@ const Orders = ({ token }) => {
     fetchAllOrders();
   }, [token])
 
-  if (loading) {
+  // Filter logic
+  const filteredOrders = orders.filter(order => {
+    const customerName = `${order.address.firstname} ${order.address.lastname}`.toLowerCase();
+    const matchesSearch = customerName.includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'All' || order.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const displayedOrders = filteredOrders.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
+
+  if (loading && orders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-80 text-center">
         <div className="w-10 h-10 border-4 border-gray-300 border-t-blue-500 rounded-full animate-spin mb-4"></div>
@@ -111,15 +138,39 @@ const Orders = ({ token }) => {
 
   return (
     <div className="max-w-7xl mx-auto p-5 font-sans">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8 pb-4 border-b-2 border-gray-100">
-        <h2 className="text-3xl font-semibold text-gray-800 mb-3 sm:mb-0">Order Management</h2>
-        <div className="bg-blue-50 text-blue-600 px-4 py-2 rounded-full font-medium">
-          Total Orders: {orders.length}
+      {/* Header & Controls */}
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 pb-4 border-b-2 border-gray-100 gap-4">
+        <div className="flex items-center gap-4">
+            <h2 className="text-3xl font-semibold text-gray-800">Order Management</h2>
+            <div className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium text-sm">
+            Total: {orders.length}
+            </div>
+        </div>
+        
+        <div className='flex flex-col sm:flex-row gap-3 w-full lg:w-auto'>
+          <input
+            type="text"
+            placeholder="Search by customer name..."
+            className='border-2 px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-blue-500 transition-colors'
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <select 
+            className='border-2 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 transition-colors'
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="All">All Statuses</option>
+            <option value="Order Placed">Order Placed</option>
+            <option value="Packing">Packing</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Out for delivery">Out for delivery</option>
+            <option value="Delivered">Delivered</option>
+          </select>
         </div>
       </div>
       
-      {orders.length === 0 ? (
+      {displayedOrders.length === 0 ? (
         <div className="flex justify-center items-center min-h-96">
           <div className="text-center">
             <img 
@@ -128,12 +179,12 @@ const Orders = ({ token }) => {
               className="w-20 h-20 opacity-50 mx-auto mb-5"
             />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">No orders found</h3>
-            <p className="text-gray-500">Orders will appear here once customers start placing them.</p>
+            <p className="text-gray-500">Try adjusting your filters or search term.</p>
           </div>
         </div>
       ) : (
         <div className="space-y-5">
-          {orders.map((order) => (
+          {displayedOrders.map((order) => (
             <div 
               key={order._id} 
               className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
@@ -246,6 +297,30 @@ const Orders = ({ token }) => {
           ))}
         </div>
       )}
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-8 pb-4">
+          <button 
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            className={`px-5 py-2 border-2 rounded-lg font-medium transition-colors ${currentPage === 1 ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'hover:bg-blue-50 border-gray-300 text-gray-700 hover:text-blue-600 hover:border-blue-300'}`}
+          >
+            Previous
+          </button>
+          <div className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium">
+            Page {currentPage} of {totalPages}
+          </div>
+          <button 
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            className={`px-5 py-2 border-2 rounded-lg font-medium transition-colors ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'hover:bg-blue-50 border-gray-300 text-gray-700 hover:text-blue-600 hover:border-blue-300'}`}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
     </div>
   )
 }
