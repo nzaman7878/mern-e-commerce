@@ -54,47 +54,52 @@ const Customers = ({ token }) => {
   )
 
   return (
-    <div className='w-full max-w-5xl flex flex-col gap-5'>
-      <div className='flex justify-between items-end'>
+    <div className='w-full max-w-6xl flex flex-col gap-6 font-sans'>
+      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
         <div>
-          <h2 className='text-2xl font-semibold mb-1'>Customer Management</h2>
-          <p className='text-gray-600'>View and manage registered customers.</p>
+          <h2 className='text-2xl font-bold text-slate-900'>Customer Management</h2>
+          <p className='text-slate-500 mt-1 text-sm'>View and manage your registered customers.</p>
         </div>
-        <div className='w-64'>
+        <div className='w-full sm:w-72 relative'>
           <input 
             type="text" 
-            placeholder='Search by name or email...' 
-            className='w-full border px-3 py-2 rounded focus:outline-none focus:border-blue-500'
+            placeholder='Search name or email...' 
+            className='w-full border border-gray-200 px-4 py-2.5 rounded-lg focus:outline-none focus:ring-4 focus:ring-slate-100 focus:border-slate-400 transition-all text-sm bg-white shadow-sm'
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
 
-      <div className='bg-white border rounded-lg shadow-sm overflow-hidden mt-4'>
+      <div className='bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden'>
         {loading ? (
-          <p className='p-8 text-center text-gray-500'>Loading customers...</p>
+          <div className='p-12 flex flex-col items-center justify-center text-slate-500'>
+             <div className="w-8 h-8 border-4 border-gray-200 border-t-slate-800 rounded-full animate-spin mb-4"></div>
+             <p>Loading customers...</p>
+          </div>
         ) : filteredUsers.length === 0 ? (
-          <p className='p-8 text-center text-gray-500'>No customers found.</p>
+          <div className='p-12 text-center text-slate-500'>
+            <p>No customers found matching your criteria.</p>
+          </div>
         ) : (
           <div className='overflow-x-auto'>
-            <table className='w-full text-left border-collapse'>
+            <table className='w-full text-left border-collapse whitespace-nowrap'>
               <thead>
-                <tr className='bg-gray-50 border-b text-sm text-gray-600'>
-                  <th className='p-4 font-medium'>Name</th>
-                  <th className='p-4 font-medium'>Email</th>
-                  <th className='p-4 font-medium'>Actions</th>
+                <tr className='bg-gray-50/50 border-b border-gray-200 text-xs text-slate-500 uppercase tracking-wider'>
+                  <th className='px-6 py-4 font-semibold'>Name</th>
+                  <th className='px-6 py-4 font-semibold'>Email</th>
+                  <th className='px-6 py-4 font-semibold text-right'>Actions</th>
                 </tr>
               </thead>
-              <tbody className='text-sm'>
+              <tbody className='text-sm divide-y divide-gray-100'>
                 {filteredUsers.map((user) => (
-                  <tr key={user._id} className='border-b hover:bg-gray-50 transition-colors'>
-                    <td className='p-4'>{user.name}</td>
-                    <td className='p-4 text-gray-600'>{user.email}</td>
-                    <td className='p-4'>
+                  <tr key={user._id} className='hover:bg-gray-50/80 transition-colors group'>
+                    <td className='px-6 py-4 font-medium text-slate-900'>{user.name}</td>
+                    <td className='px-6 py-4 text-slate-600'>{user.email}</td>
+                    <td className='px-6 py-4 text-right'>
                       <button 
                         onClick={() => removeUser(user._id)}
-                        className='text-red-500 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded transition-colors'
+                        className='text-red-500 hover:text-red-700 bg-white border border-transparent hover:border-red-200 hover:bg-red-50 px-3 py-1.5 rounded-md transition-all font-medium text-xs opacity-0 group-hover:opacity-100 focus:opacity-100'
                       >
                         Remove
                       </button>

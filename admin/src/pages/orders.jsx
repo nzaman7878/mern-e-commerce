@@ -137,13 +137,16 @@ const Orders = ({ token }) => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-5 font-sans">
+    <div className="max-w-7xl mx-auto flex flex-col gap-6 font-sans">
       {/* Header & Controls */}
-      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 pb-4 border-b-2 border-gray-100 gap-4">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-4">
         <div className="flex items-center gap-4">
-            <h2 className="text-3xl font-semibold text-gray-800">Order Management</h2>
-            <div className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium text-sm">
-            Total: {orders.length}
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900">Order Management</h2>
+              <p className="text-slate-500 text-sm mt-1">Track and process customer orders.</p>
+            </div>
+            <div className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full font-semibold text-xs border border-slate-200">
+              {orders.length} Total
             </div>
         </div>
         
@@ -151,12 +154,12 @@ const Orders = ({ token }) => {
           <input
             type="text"
             placeholder="Search by customer name..."
-            className='border-2 px-4 py-2 rounded-lg w-full sm:w-64 focus:outline-none focus:border-blue-500 transition-colors'
+            className='border border-gray-200 px-4 py-2.5 rounded-lg w-full sm:w-64 focus:outline-none focus:ring-4 focus:ring-slate-100 focus:border-slate-400 transition-all text-sm bg-white shadow-sm'
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <select 
-            className='border-2 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500 transition-colors'
+            className='border border-gray-200 px-4 py-2.5 rounded-lg focus:outline-none focus:ring-4 focus:ring-slate-100 focus:border-slate-400 transition-all text-sm bg-white shadow-sm cursor-pointer'
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -171,118 +174,105 @@ const Orders = ({ token }) => {
       </div>
       
       {displayedOrders.length === 0 ? (
-        <div className="flex justify-center items-center min-h-96">
-          <div className="text-center">
-            <img 
-              src={assets.parcel_icon} 
-              alt="No orders" 
-              className="w-20 h-20 opacity-50 mx-auto mb-5"
-            />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No orders found</h3>
-            <p className="text-gray-500">Try adjusting your filters or search term.</p>
+        <div className="flex justify-center items-center min-h-[400px] bg-white border border-gray-200 rounded-2xl shadow-sm">
+          <div className="text-center p-8">
+            <div className="text-4xl mb-4 opacity-50">📦</div>
+            <h3 className="text-lg font-semibold text-slate-900 mb-1">No orders found</h3>
+            <p className="text-slate-500 text-sm">Try adjusting your filters or search term.</p>
           </div>
         </div>
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-4">
           {displayedOrders.map((order) => (
             <div 
               key={order._id} 
-              className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
             >
-              <div className="flex flex-col lg:flex-row p-6 gap-5">
-                {/* Order Icon */}
-                <div className="flex-shrink-0 self-start">
-                  <img 
-                    src={assets.parcel_icon} 
-                    alt="Parcel" 
-                    className="w-12 h-12"
-                  />
-                </div>
+              <div className="flex flex-col lg:flex-row p-6 gap-6">
                 
-                <div className="flex-1 space-y-5">
+                <div className="flex-1 space-y-6">
                   {/* Order Items */}
-                  <div className="border-b border-gray-100 pb-4">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-3">Order Items</h4>
+                  <div>
+                    <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Order Items</h4>
                     <div className="space-y-2">
                       {order.items.map((item, index) => (
                         <div 
                           key={index} 
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                          className="flex items-center gap-3 p-3 bg-gray-50/50 border border-gray-100 rounded-lg"
                         >
-                          <span className="font-medium text-gray-800 flex-1">{item.name}</span>
-                          <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                          <span className="font-medium text-slate-900 text-sm flex-1">{item.name}</span>
+                          <span className="bg-slate-200 text-slate-800 text-xs px-2.5 py-1 rounded-md font-semibold">
                             x{item.quantity}
                           </span>
                           {item.size && (
-                            <span className="text-gray-500 text-sm">({item.size})</span>
+                            <span className="text-slate-500 text-xs font-medium">({item.size})</span>
                           )}
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Customer Information */}
-                  <div className="border-b border-gray-100 pb-4">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-3">Delivery Address</h4>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="font-semibold text-gray-800 text-base mb-2">
-                        {order.address.firstname} {order.address.lastname}
-                      </p>
-                      <div className="text-gray-600 leading-relaxed space-y-1">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
+                    {/* Customer Information */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Delivery Address</h4>
+                      <div className="text-sm text-slate-600 leading-relaxed">
+                        <p className="font-semibold text-slate-900 text-base mb-1">
+                          {order.address.firstname} {order.address.lastname}
+                        </p>
                         <p>{order.address.street}</p>
-                        <p>
-                          {order.address.city}, {order.address.state}, {order.address.country} - {order.address.zipcode}
+                        <p>{order.address.city}, {order.address.state}</p>
+                        <p>{order.address.country} - {order.address.zipcode}</p>
+                        <p className="text-slate-900 font-medium mt-2">
+                          📞 {order.address.phone}
                         </p>
                       </div>
-                      <p className="text-blue-600 font-medium mt-2">
-                        📞 {order.address.phone}
-                      </p>
                     </div>
-                  </div>
 
-                  {/* Order Details */}
-                  <div className="border-b border-gray-100 pb-4">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-3">Order Summary</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-600 font-medium">Items:</span>
-                        <span className="text-gray-800 font-semibold">{order.items.length}</span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-600 font-medium">Method:</span>
-                        <span className="text-gray-800 font-semibold">{order.paymentMethod}</span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-600 font-medium">Payment:</span>
-                        <span className={`font-semibold ${order.payment ? 'text-green-600' : 'text-orange-600'}`}>
-                          {order.payment ? '✅ Done' : '⏳ Pending'}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-600 font-medium">Date:</span>
-                        <span className="text-gray-800 font-semibold">
-                          {new Date(order.date).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                        <span className="text-gray-600 font-medium">Total:</span>
-                        <span className="text-blue-600 font-bold text-base">
-                          {currency}{order.amount}
-                        </span>
+                    {/* Order Details */}
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">Order Summary</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-slate-500">Items:</span>
+                          <span className="text-slate-900 font-medium">{order.items.length}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-slate-500">Method:</span>
+                          <span className="text-slate-900 font-medium">{order.paymentMethod}</span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-slate-500">Payment:</span>
+                          <span className={`font-semibold ${order.payment ? 'text-emerald-600' : 'text-orange-600'}`}>
+                            {order.payment ? 'Paid' : 'Pending'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-slate-500">Date:</span>
+                          <span className="text-slate-900 font-medium">
+                            {new Date(order.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center pt-2 mt-2 border-t border-gray-100">
+                          <span className="text-slate-900 font-semibold">Total:</span>
+                          <span className="text-slate-900 font-bold text-lg">
+                            {currency}{order.amount}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Status Update */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <label className="font-semibold text-gray-800">
-                      Order Status:
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 pt-4 border-t border-gray-100">
+                    <label className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                      Status:
                     </label>
                     <select 
                       id={`status-${order._id}`}
                       value={order.status || 'Order Placed'}
                       onChange={(e) => updateOrderStatus(order._id, e.target.value)}
-                      className={`px-4 py-2 border-2 rounded-lg font-medium cursor-pointer transition-all duration-200 focus:outline-none focus:ring-3 focus:ring-blue-300 min-w-40 ${getStatusColor(order.status || 'Order Placed')}`}
+                      className={`px-4 py-2 border rounded-lg text-sm font-semibold cursor-pointer transition-all focus:outline-none focus:ring-4 focus:ring-slate-100 min-w-40 ${getStatusColor(order.status || 'Order Placed')}`}
                     >
                       <option value="Order Placed">Order Placed</option>
                       <option value="Packing">Packing</option>
@@ -300,24 +290,27 @@ const Orders = ({ token }) => {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-8 pb-4">
-          <button 
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            className={`px-5 py-2 border-2 rounded-lg font-medium transition-colors ${currentPage === 1 ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'hover:bg-blue-50 border-gray-300 text-gray-700 hover:text-blue-600 hover:border-blue-300'}`}
-          >
-            Previous
-          </button>
-          <div className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium">
-            Page {currentPage} of {totalPages}
+        <div className="flex justify-between items-center py-6 mt-4">
+          <span className="text-sm text-slate-500 font-medium">
+             Page {currentPage} of {totalPages}
+          </span>
+          <div className="flex gap-2">
+            <button 
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              className={`px-4 py-2 border rounded-lg text-sm font-medium transition-all ${currentPage === 1 ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-200 text-slate-700 hover:bg-gray-50 hover:border-slate-300 shadow-sm'}`}
+            >
+              Previous
+            </button>
+            
+            <button 
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+               className={`px-4 py-2 border rounded-lg text-sm font-medium transition-all ${currentPage === totalPages ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-200 text-slate-700 hover:bg-gray-50 hover:border-slate-300 shadow-sm'}`}
+            >
+              Next
+            </button>
           </div>
-          <button 
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            className={`px-5 py-2 border-2 rounded-lg font-medium transition-colors ${currentPage === totalPages ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'hover:bg-blue-50 border-gray-300 text-gray-700 hover:text-blue-600 hover:border-blue-300'}`}
-          >
-            Next
-          </button>
         </div>
       )}
 

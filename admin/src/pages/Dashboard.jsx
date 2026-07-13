@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { backendUrl, currency } from '../App'
 import { toast } from 'react-toastify'
-import { assets } from '../assets/assets'
 
 const Dashboard = ({ token }) => {
   const [stats, setStats] = useState({
@@ -50,101 +49,114 @@ const Dashboard = ({ token }) => {
   }
 
   return (
-    <div className='flex flex-col gap-6 w-full font-sans'>
-      <h2 className='text-3xl font-semibold text-gray-800 mb-2'>Dashboard Overview</h2>
+    <div className='flex flex-col gap-8 w-full font-sans'>
+      <div>
+        <h2 className='text-2xl font-bold text-slate-900'>Overview</h2>
+        <p className='text-gray-500 text-sm mt-1'>Welcome back. Here's what's happening with your store today.</p>
+      </div>
 
       {/* Stats Cards */}
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
-        
         {/* Revenue Card */}
-        <div className='bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4'>
-          <div className='w-14 h-14 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-2xl font-bold'>
-            {currency}
+        <div className='bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow'>
+          <div className='flex items-center justify-between mb-4'>
+            <p className='text-slate-500 text-sm font-semibold uppercase tracking-wider'>Total Revenue</p>
+            <div className='w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold'>
+              {currency}
+            </div>
           </div>
           <div>
-            <p className='text-gray-500 text-sm font-medium uppercase'>Total Revenue</p>
-            <p className='text-2xl font-bold text-gray-800'>{currency}{stats.totalRevenue.toLocaleString()}</p>
+            <p className='text-3xl font-bold text-slate-900'>{currency}{stats.totalRevenue.toLocaleString()}</p>
           </div>
         </div>
 
         {/* Orders Card */}
-        <div className='bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4'>
-          <div className='w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xl font-bold'>
-            📦
+        <div className='bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow'>
+           <div className='flex items-center justify-between mb-4'>
+            <p className='text-slate-500 text-sm font-semibold uppercase tracking-wider'>Total Orders</p>
+            <div className='w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-lg'>
+              📦
+            </div>
           </div>
           <div>
-            <p className='text-gray-500 text-sm font-medium uppercase'>Total Orders</p>
-            <p className='text-2xl font-bold text-gray-800'>{stats.totalOrders.toLocaleString()}</p>
+            <p className='text-3xl font-bold text-slate-900'>{stats.totalOrders.toLocaleString()}</p>
           </div>
         </div>
 
         {/* Products Card */}
-        <div className='bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4'>
-          <div className='w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xl font-bold'>
-            🛍️
+        <div className='bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow'>
+           <div className='flex items-center justify-between mb-4'>
+            <p className='text-slate-500 text-sm font-semibold uppercase tracking-wider'>Products</p>
+            <div className='w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600 text-lg'>
+              🛍️
+            </div>
           </div>
           <div>
-            <p className='text-gray-500 text-sm font-medium uppercase'>Total Products</p>
-            <p className='text-2xl font-bold text-gray-800'>{stats.totalProducts.toLocaleString()}</p>
+            <p className='text-3xl font-bold text-slate-900'>{stats.totalProducts.toLocaleString()}</p>
           </div>
         </div>
 
         {/* Users Card */}
-        <div className='bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-center gap-4'>
-          <div className='w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xl font-bold'>
-            👥
+        <div className='bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow'>
+           <div className='flex items-center justify-between mb-4'>
+            <p className='text-slate-500 text-sm font-semibold uppercase tracking-wider'>Customers</p>
+            <div className='w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600 text-lg'>
+              👥
+            </div>
           </div>
           <div>
-            <p className='text-gray-500 text-sm font-medium uppercase'>Active Users</p>
-            <p className='text-2xl font-bold text-gray-800'>{stats.totalUsers.toLocaleString()}</p>
+            <p className='text-3xl font-bold text-slate-900'>{stats.totalUsers.toLocaleString()}</p>
           </div>
         </div>
-
       </div>
 
       {/* Recent Actionable Orders */}
-      <div className='mt-6 bg-white border border-gray-200 rounded-xl shadow-sm'>
-        <div className='px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl flex justify-between items-center'>
-          <h3 className='text-lg font-semibold text-gray-800'>Recent Actionable Orders</h3>
-          <span className='text-sm text-gray-500'>Pending & Packing</span>
+      <div className='bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden'>
+        <div className='px-6 py-5 border-b border-gray-200 flex justify-between items-center'>
+          <h3 className='text-lg font-bold text-slate-900'>Action Required</h3>
+          <span className='text-sm text-slate-500 font-medium'>Recent pending orders</span>
         </div>
         
-        <div className='p-0 overflow-x-auto'>
+        <div className='overflow-x-auto'>
           {recentOrders.length === 0 ? (
-            <p className='text-center py-10 text-gray-500'>No pending orders to process right now.</p>
+            <div className='text-center py-12'>
+               <p className='text-slate-500'>You're all caught up! No pending orders right now.</p>
+            </div>
           ) : (
-            <table className='w-full text-left border-collapse'>
+            <table className='w-full text-left border-collapse whitespace-nowrap'>
               <thead>
-                <tr className='text-gray-500 text-sm border-b border-gray-200 bg-white'>
-                  <th className='px-6 py-4 font-medium'>Customer</th>
-                  <th className='px-6 py-4 font-medium'>Items</th>
-                  <th className='px-6 py-4 font-medium'>Amount</th>
-                  <th className='px-6 py-4 font-medium'>Status</th>
-                  <th className='px-6 py-4 font-medium'>Date</th>
+                <tr className='text-slate-500 text-xs uppercase tracking-wider border-b border-gray-200 bg-gray-50/50'>
+                  <th className='px-6 py-4 font-semibold'>Customer</th>
+                  <th className='px-6 py-4 font-semibold'>Items</th>
+                  <th className='px-6 py-4 font-semibold text-right'>Amount</th>
+                  <th className='px-6 py-4 font-semibold'>Status</th>
+                  <th className='px-6 py-4 font-semibold'>Date</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className='text-sm divide-y divide-gray-100'>
                 {recentOrders.map((order) => (
-                  <tr key={order._id} className='border-b border-gray-100 hover:bg-gray-50 transition-colors'>
+                  <tr key={order._id} className='hover:bg-gray-50/80 transition-colors'>
                     <td className='px-6 py-4'>
-                      <p className='font-medium text-gray-800'>{order.address.firstname} {order.address.lastname}</p>
-                      <p className='text-sm text-gray-500'>{order.address.city}, {order.address.country}</p>
+                      <p className='font-medium text-slate-900'>{order.address.firstname} {order.address.lastname}</p>
+                      <p className='text-xs text-slate-500 mt-0.5'>{order.address.city}, {order.address.country}</p>
                     </td>
-                    <td className='px-6 py-4 text-gray-600'>
+                    <td className='px-6 py-4 text-slate-600'>
                       {order.items.length} item{order.items.length > 1 && 's'}
                     </td>
-                    <td className='px-6 py-4 font-semibold text-gray-800'>
+                    <td className='px-6 py-4 font-semibold text-slate-900 text-right'>
                       {currency}{order.amount}
                     </td>
                     <td className='px-6 py-4'>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        order.status === 'Packing' ? 'bg-orange-100 text-orange-700' : 'bg-gray-100 text-gray-700'
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                        order.status === 'Packing' 
+                          ? 'bg-orange-50 text-orange-700 border-orange-200' 
+                          : 'bg-slate-100 text-slate-700 border-slate-200'
                       }`}>
                         {order.status}
                       </span>
                     </td>
-                    <td className='px-6 py-4 text-gray-500 text-sm'>
-                      {new Date(order.date).toLocaleDateString()}
+                    <td className='px-6 py-4 text-slate-500 text-sm'>
+                      {new Date(order.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                     </td>
                   </tr>
                 ))}
@@ -153,7 +165,6 @@ const Dashboard = ({ token }) => {
           )}
         </div>
       </div>
-
     </div>
   )
 }

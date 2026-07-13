@@ -25,22 +25,45 @@ const Login = ({setToken}) => {
   }
 
   return (
-    <div className='min-h-screen flex items-center justify-center w-full'>
-        <div className='bg-white shadow-md rounded-lg px-8 py-6 max-w-md'>
-        <h1 className='text-2xl font-bold mb-4'>Admin Panel</h1>
-        <form onSubmit={onSubmitHandler}>
-            <div className='mb-3 min-w-72'>
-                <p className='text-sm font-medium text-gray-700 mb-2'>Email Address</p>
-                <input onChange={(e)=>setEmail(e.target.value)} value={email} className='rounded-b-md w-full px-3 py-2 border bg-gray-300 outline-none' type="email" placeholder='your@email.com' required />
+    <div className='min-h-screen flex items-center justify-center w-full bg-gray-50 font-sans'>
+        <div className='bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl px-10 py-10 max-w-md w-full border border-gray-100'>
+        <div className='text-center mb-8'>
+          <h1 className='text-3xl font-bold text-slate-900'>Archive Index</h1>
+          <p className='text-gray-500 mt-2 font-medium'>Sign in to your admin panel</p>
+        </div>
+        <form onSubmit={onSubmitHandler} className='flex flex-col gap-5'>
+            <div className='w-full'>
+                <label className='text-sm font-semibold text-slate-700 mb-2 block'>Email Address</label>
+                <input 
+                  onChange={(e)=>setEmail(e.target.value)} 
+                  value={email} 
+                  className='w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-slate-400 focus:ring-4 focus:ring-slate-100 transition-all outline-none bg-gray-50 focus:bg-white' 
+                  type="email" 
+                  placeholder='admin@example.com' 
+                  required 
+                />
             </div>
-             <div className='mb-3 min-w-72'>
-                <p className='text-sm font-medium text-gray-700 mb-2'>Password</p>
-                <input onChange={(e)=>setPassword(e.target.value)} value={password} className='rounded-b-md w-full px-3 py-2 border bg-gray-300 outline-none' type="password" placeholder='Enter your password' required />
+             <div className='w-full'>
+                <div className='flex justify-between items-center mb-2'>
+                  <label className='text-sm font-semibold text-slate-700'>Password</label>
+                </div>
+                <input 
+                  onChange={(e)=>setPassword(e.target.value)} 
+                  value={password} 
+                  className='w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-slate-400 focus:ring-4 focus:ring-slate-100 transition-all outline-none bg-gray-50 focus:bg-white' 
+                  type="password" 
+                  placeholder='••••••••' 
+                  required 
+                />
             </div>
-            <button className='mt-2 w-full py-2 px-4 rounded-md text-white bg-black' type='submit'>Login</button>
+            <button 
+              className='mt-4 w-full py-3.5 px-4 rounded-xl text-white bg-slate-900 hover:bg-slate-800 transition-colors font-semibold shadow-sm' 
+              type='submit'
+            >
+              Sign in
+            </button>
         </form>
-
-    </div>
+      </div>
     </div>
   )
 }
