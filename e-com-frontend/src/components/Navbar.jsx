@@ -46,8 +46,10 @@ const Navbar = () => {
 
         {/* Center: Logo */}
         <div className='flex-1 flex justify-center'>
-          <Link to='/' onClick={() => window.scrollTo(0, 0)}>
-            <img src={assets.logo} alt='logo' className='w-28 md:w-36 grayscale opacity-90' />
+          <Link to='/' onClick={() => window.scrollTo(0, 0)} className='group'>
+            <h1 className='font-serif text-3xl md:text-4xl leading-none text-[#2C2723] transition-colors'>
+              Snazzy<span className='italic font-light text-[#C96A3C]'>Fit.</span>
+            </h1>
           </Link>
         </div>
 

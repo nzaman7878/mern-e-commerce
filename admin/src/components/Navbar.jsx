@@ -5,7 +5,7 @@ const Navbar = ({setToken}) => {
   return (
     <header className='sticky top-0 z-30 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between'>
         <div className='flex items-center gap-3'>
-          <div className='font-bold text-xl tracking-tight text-slate-900'>Archive <span className='text-slate-400 font-light'>Index.</span></div>
+          <div className='font-bold text-2xl tracking-tight text-slate-900'>Snazzy<span className='text-slate-500 font-light italic'>Fit.</span></div>
         </div>
         <div className='flex items-center gap-4'>
           <div className='hidden sm:flex items-center gap-2 mr-4 border-r border-gray-200 pr-4'>

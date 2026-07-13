@@ -28,7 +28,7 @@ const Login = ({setToken}) => {
     <div className='min-h-screen flex items-center justify-center w-full bg-gray-50 font-sans'>
         <div className='bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl px-10 py-10 max-w-md w-full border border-gray-100'>
         <div className='text-center mb-8'>
-          <h1 className='text-3xl font-bold text-slate-900'>Archive Index</h1>
+          <h1 className='text-4xl font-bold text-slate-900 tracking-tight'>Snazzy<span className='text-slate-500 font-light italic'>Fit.</span></h1>
           <p className='text-gray-500 mt-2 font-medium'>Sign in to your admin panel</p>
         </div>
         <form onSubmit={onSubmitHandler} className='flex flex-col gap-5'>
