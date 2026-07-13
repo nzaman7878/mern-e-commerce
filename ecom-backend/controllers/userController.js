@@ -158,7 +158,7 @@ const getUserProfile = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
   try {
-    const { userId, name, email, password } = req.body;
+    const { userId, name, email, password, phone, addresses } = req.body;
     const user = await userModel.findById(userId);
 
     if (!user) {
@@ -166,6 +166,8 @@ const updateUserProfile = async (req, res) => {
     }
 
     if (name) user.name = name;
+    if (phone !== undefined) user.phone = phone;
+    if (addresses !== undefined) user.addresses = addresses;
     if (email) {
       if (!validator.isEmail(email)) {
         return res.json({ success: false, message: 'Please enter a valid email address' });

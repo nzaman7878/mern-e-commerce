@@ -31,6 +31,28 @@ const userSchema = new mongoose.Schema({
     cartData: {
         type: Object,
         default: {}
+    },
+    phone: {
+        type: String,
+        default: ''
+    },
+    addresses: {
+        type: [
+            {
+                id: { type: String, required: true },
+                firstName: String,
+                lastName: String,
+                email: String,
+                street: String,
+                city: String,
+                state: String,
+                zipcode: String,
+                country: String,
+                phone: String,
+                isDefault: { type: Boolean, default: false }
+            }
+        ],
+        default: []
     }
 }, { minimize: false });
 

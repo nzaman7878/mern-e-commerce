@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import CartTotal from '../components/CartTotal'
 import { assets } from '../assets/frontend_assets/assets'
@@ -17,12 +17,55 @@ const PlaceOrder = () => {
     setCartItems, 
     delivery_fee, 
     products, 
-    userId 
+    userId,
+    userData
   } = useContext(ShopContext);
 
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '', street: '', city: '', state: '', zipcode: '', country: '', phone: ''
   });
+
+  useEffect(() => {
+    if (userData && userData.addresses && userData.addresses.length > 0) {
+      const defaultAddr = userData.addresses.find(a => a.isDefault);
+      if (defaultAddr) {
+        setFormData({
+          firstName: defaultAddr.firstName || '',
+          lastName: defaultAddr.lastName || '',
+          email: defaultAddr.email || '',
+          street: defaultAddr.street || '',
+          city: defaultAddr.city || '',
+          state: defaultAddr.state || '',
+          zipcode: defaultAddr.zipcode || '',
+          country: defaultAddr.country || '',
+          phone: defaultAddr.phone || ''
+        });
+      }
+    }
+  }, [userData]);
+
+  const handleAddressSelect = (e) => {
+    if (e.target.value === 'new') {
+      setFormData({
+        firstName: '', lastName: '', email: '', street: '', city: '', state: '', zipcode: '', country: '', phone: ''
+      });
+      return;
+    }
+    const selectedAddr = userData.addresses.find(a => a.id === e.target.value);
+    if (selectedAddr) {
+      setFormData({
+        firstName: selectedAddr.firstName || '',
+        lastName: selectedAddr.lastName || '',
+        email: selectedAddr.email || '',
+        street: selectedAddr.street || '',
+        city: selectedAddr.city || '',
+        state: selectedAddr.state || '',
+        zipcode: selectedAddr.zipcode || '',
+        country: selectedAddr.country || '',
+        phone: selectedAddr.phone || ''
+      });
+    }
+  };
 
   const onChangeHandler = (event) => {
     const name = event.target.name;
@@ -107,6 +150,23 @@ const PlaceOrder = () => {
         {/* Delivery Details */}
         <div className='flex flex-col gap-8 w-full lg:w-3/5'>
           <h2 className='font-serif text-4xl md:text-5xl mb-8'>Delivery Details.</h2>
+
+          {userData && userData.addresses && userData.addresses.length > 0 && (
+            <div className='mb-4'>
+              <select 
+                onChange={handleAddressSelect} 
+                className='w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm'
+              >
+                <option value="" disabled selected>Select a saved address...</option>
+                {userData.addresses.map(addr => (
+                  <option key={addr.id} value={addr.id}>
+                    {addr.firstName} {addr.lastName} - {addr.street}, {addr.city} {addr.isDefault ? '(Default)' : ''}
+                  </option>
+                ))}
+                <option value="new">Use a new address</option>
+              </select>
+            </div>
+          )}
           
           <div className='flex gap-8'>
             <div className='relative w-full'>
