@@ -39,4 +39,25 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
-export { getDashboardStats };
+const listUsers = async (req, res) => {
+  try {
+    const users = await userModel.find({}).select('-password');
+    res.json({ success: true, users });
+  } catch (error) {
+    console.error('List Users Error:', error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const removeUser = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    await userModel.findByIdAndDelete(userId);
+    res.json({ success: true, message: 'User removed successfully' });
+  } catch (error) {
+    console.error('Remove User Error:', error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { getDashboardStats, listUsers, removeUser };

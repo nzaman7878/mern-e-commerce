@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { assets } from '../assets/assets'
 import axios from 'axios'
 import { backendUrl } from '../App'
@@ -17,6 +17,24 @@ const Add = ({ token }) => {
   const [subCategory, setSubCategory] = useState('')
   const [bestseller, setBestseller] = useState(false)
   const [sizes, setSizes] = useState([])
+  const [categoriesList, setCategoriesList] = useState([])
+  const [subCategoriesList, setSubCategoriesList] = useState([])
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(backendUrl + '/api/category/list')
+        if (response.data.success) {
+          const all = response.data.categories
+          setCategoriesList(all.filter(c => c.type === 'category'))
+          setSubCategoriesList(all.filter(c => c.type === 'subCategory'))
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error)
+      }
+    }
+    fetchCategories()
+  }, [])
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -105,18 +123,18 @@ const Add = ({ token }) => {
             <p className='mb-2'>Product category</p>
             <select onChange={(e) => setCategory(e.target.value)} className='w-full px-3 py-2' >
               <option value="">Select...</option>
-              <option value="Men">Men</option>
-              <option value="Women">Women</option>
-              <option value="Kids">Kids</option>
+              {categoriesList.map(cat => (
+                <option key={cat._id} value={cat.name}>{cat.name}</option>
+              ))}
             </select>
           </div>
           <div>
             <p className='mb-2'>Sub category</p>
             <select onChange={(e) => setSubCategory(e.target.value)} className='w-full px-3 py-2' >
               <option value="">Select...</option>
-              <option value="Topwear">Topwear</option>
-              <option value="Bottomwear">Bottomwear</option>
-              <option value="Winterwear">Winterwear</option>
+              {subCategoriesList.map(sub => (
+                <option key={sub._id} value={sub.name}>{sub.name}</option>
+              ))}
             </select>
           </div>
           <div>

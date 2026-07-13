@@ -1,11 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/frontend_assets/assets';
 import ProductItem from '../components/ProductItem';
 
 const Collection = () => {
-  const { products, search, showSearch } = useContext(ShopContext);
+  const { products, search, showSearch, backendUrl } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [subCategoriesList, setSubCategoriesList] = useState([]);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategory, setSubcategory] = useState([]);
@@ -67,6 +70,22 @@ const Collection = () => {
   }, [products]);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(backendUrl + '/api/category/list');
+        if (response.data.success) {
+          const all = response.data.categories;
+          setCategoriesList(all.filter(c => c.type === 'category'));
+          setSubCategoriesList(all.filter(c => c.type === 'subCategory'));
+        }
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+      }
+    };
+    fetchCategories();
+  }, [backendUrl]);
+
+  useEffect(() => {
     applyFilter();
   }, [category, subCategory, search, showSearch, products]);
 
@@ -95,16 +114,16 @@ const Collection = () => {
             <div>
               <p className='font-serif italic text-[#7B746E] mb-4'>Category</p>
               <div className='flex flex-col gap-3 font-sans text-xs tracking-widest uppercase text-[#2C2723]'>
-                {['Men', 'Women', 'Kids'].map((cat) => (
-                  <label key={cat} className='flex items-center gap-3 cursor-pointer group'>
+                {categoriesList.map((catObj) => (
+                  <label key={catObj._id} className='flex items-center gap-3 cursor-pointer group'>
                     <input
                       className='appearance-none w-3 h-3 border border-[#2C2723] checked:bg-[#2C2723] flex items-center justify-center after:content-[""] checked:after:w-1 checked:after:h-1 checked:after:bg-[#F8F5F1] transition-colors cursor-pointer'
                       type='checkbox'
-                      value={cat}
+                      value={catObj.name}
                       onChange={toggleCategory}
-                      checked={category.includes(cat)}
+                      checked={category.includes(catObj.name)}
                     />
-                    <span className='group-hover:opacity-70 transition-opacity'>{cat}</span>
+                    <span className='group-hover:opacity-70 transition-opacity'>{catObj.name}</span>
                   </label>
                 ))}
               </div>
@@ -114,16 +133,16 @@ const Collection = () => {
             <div>
               <p className='font-serif italic text-[#7B746E] mb-4'>Type</p>
               <div className='flex flex-col gap-3 font-sans text-xs tracking-widest uppercase text-[#2C2723]'>
-                {['Topwear', 'Bottomwear', 'Winterwear'].map((type) => (
-                  <label key={type} className='flex items-center gap-3 cursor-pointer group'>
+                {subCategoriesList.map((subObj) => (
+                  <label key={subObj._id} className='flex items-center gap-3 cursor-pointer group'>
                     <input
                       className='appearance-none w-3 h-3 border border-[#2C2723] checked:bg-[#2C2723] flex items-center justify-center after:content-[""] checked:after:w-1 checked:after:h-1 checked:after:bg-[#F8F5F1] transition-colors cursor-pointer'
                       type='checkbox'
-                      value={type}
+                      value={subObj.name}
                       onChange={toggleSubCategory}
-                      checked={subCategory.includes(type)}
+                      checked={subCategory.includes(subObj.name)}
                     />
-                    <span className='group-hover:opacity-70 transition-opacity'>{type}</span>
+                    <span className='group-hover:opacity-70 transition-opacity'>{subObj.name}</span>
                   </label>
                 ))}
               </div>

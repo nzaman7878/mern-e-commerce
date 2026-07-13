@@ -9,6 +9,7 @@ const List = ({ token }) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
+  const [categoriesList, setCategoriesList] = useState([])
   const itemsPerPage = 10
 
   const fetchList = async () => {
@@ -46,6 +47,18 @@ const List = ({ token }) => {
 
   useEffect(() => {
     fetchList()
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(backendUrl + '/api/category/list')
+        if (response.data.success) {
+          const all = response.data.categories
+          setCategoriesList(all.filter(c => c.type === 'category'))
+        }
+      } catch (error) {
+        console.error("Failed to fetch categories", error)
+      }
+    }
+    fetchCategories()
   }, [])
 
   // Filter and Pagination logic
@@ -84,9 +97,9 @@ const List = ({ token }) => {
             onChange={(e) => setCategoryFilter(e.target.value)}
           >
             <option value="All">All Categories</option>
-            <option value="Men">Men</option>
-            <option value="Women">Women</option>
-            <option value="Kids">Kids</option>
+            {categoriesList.map(cat => (
+              <option key={cat._id} value={cat.name}>{cat.name}</option>
+            ))}
           </select>
         </div>
       </div>
