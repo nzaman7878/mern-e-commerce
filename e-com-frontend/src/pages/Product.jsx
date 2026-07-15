@@ -3,13 +3,23 @@ import { useParams } from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext';
 import { assets } from '../assets/frontend_assets/assets';
 import RelatedProducts from '../components/RelatedProducts';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart } = useContext(ShopContext);
+  const { products, currency, addToCart, backendUrl, token, userData } = useContext(ShopContext);
   const [productData, setProductData] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
   const [activeTab, setActiveTab] = useState('description');
+  
+  // Review state
+  const [reviews, setReviews] = useState([]);
+  const [canReview, setCanReview] = useState(false);
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [userReview, setUserReview] = useState(null);
+  const [rating, setRating] = useState(5);
+  const [reviewText, setReviewText] = useState('');
 
   const fetchProductData = useCallback(() => {
     if (products.length > 0) {
@@ -22,10 +32,106 @@ const Product = () => {
     }
   }, [productId, products]);
 
+  const fetchReviewsData = useCallback(async () => {
+    try {
+      const res = await axios.get(`${backendUrl}/api/reviews/product/${productId}`);
+      if (res.data.success) {
+        setReviews(res.data.reviews);
+      }
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  }, [productId, backendUrl]);
+
+  const checkReviewEligibility = useCallback(async () => {
+    if (!token || !userData) return;
+    try {
+      const res = await axios.post(`${backendUrl}/api/reviews/can-review`, {
+        productId,
+        userId: userData._id
+      }, { headers: { token } });
+      
+      if (res.data.success) {
+        setCanReview(res.data.canReview);
+        setHasReviewed(res.data.hasReviewed);
+        if (res.data.review) {
+           setUserReview(res.data.review);
+           setRating(res.data.review.rating);
+           setReviewText(res.data.review.reviewText);
+        }
+      }
+    } catch (error) {
+      console.error("Error checking eligibility:", error);
+    }
+  }, [productId, token, userData, backendUrl]);
+
   useEffect(() => {
     fetchProductData();
+    fetchReviewsData();
     window.scrollTo(0, 0);
-  }, [fetchProductData]);
+  }, [fetchProductData, fetchReviewsData]);
+
+  useEffect(() => {
+    checkReviewEligibility();
+  }, [checkReviewEligibility]);
+
+  const submitReview = async (e) => {
+    e.preventDefault();
+    if (!token || !userData) {
+       toast.error("Please login to review");
+       return;
+    }
+    try {
+      const endpoint = hasReviewed ? '/api/reviews/update' : '/api/reviews/add';
+      const body = hasReviewed 
+        ? { reviewId: userReview._id, userId: userData._id, rating, reviewText }
+        : { userId: userData._id, productId, rating, reviewText };
+
+      const res = await axios.post(`${backendUrl}${endpoint}`, body, { headers: { token } });
+      
+      if (res.data.success) {
+        toast.success(res.data.message);
+        fetchReviewsData();
+        checkReviewEligibility();
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Error submitting review");
+    }
+  };
+
+  const deleteReview = async () => {
+    if (!window.confirm("Are you sure you want to delete your review?")) return;
+    try {
+      const res = await axios.post(`${backendUrl}/api/reviews/delete`, { reviewId: userReview._id, userId: userData._id }, { headers: { token } });
+      if (res.data.success) {
+        toast.success(res.data.message);
+        setHasReviewed(false);
+        setUserReview(null);
+        setRating(5);
+        setReviewText('');
+        fetchReviewsData();
+        checkReviewEligibility();
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch(error) {
+       toast.error(error.response?.data?.message || "Error deleting review");
+    }
+  };
+
+  const renderStars = (ratingValue) => {
+    return (
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span key={star} className={star <= ratingValue ? "text-yellow-500" : "text-gray-300"}>
+            ★
+          </span>
+        ))}
+      </div>
+    );
+  };
 
   if (productData === null) {
     return (
@@ -67,6 +173,13 @@ const Product = () => {
             <div className='mb-12'>
               <p className='font-sans text-xs tracking-[0.2em] uppercase text-[#7B746E] mb-4'>Archive / {productData.category}</p>
               <h1 className='font-serif text-5xl lg:text-7xl leading-none mb-6'>{productData.name}</h1>
+              
+              {/* Added Rating Display */}
+              <div className='flex items-center gap-4 mb-6'>
+                {renderStars(productData.averageRating || 0)}
+                <span className='font-sans text-xs text-[#7B746E] uppercase tracking-widest'>({productData.totalReviews || 0} Reviews)</span>
+              </div>
+
               <p className='font-serif text-3xl italic text-[#7B746E]'>
                 {currency}{productData.price.toLocaleString()}
               </p>
@@ -121,13 +234,13 @@ const Product = () => {
             className={`font-sans text-xs tracking-widest uppercase ${activeTab === 'reviews' ? 'text-[#2C2723] font-bold' : 'text-[#7B746E] hover:text-gray-600'}`}
             onClick={() => setActiveTab('reviews')}
           >
-            Reflections (122)
+            Reflections ({reviews.length})
           </button>
         </div>
         
-        <div className='font-serif text-lg leading-loose text-gray-600'>
+        <div className='text-lg leading-loose text-gray-600'>
           {activeTab === 'description' ? (
-            <div className='space-y-6'>
+            <div className='space-y-6 font-serif'>
               <p>
                 An e-commerce website is an online platform that facilitates the buying and selling of products or services over the internet. 
                 It serves as a virtual marketplace where businesses and individuals can showcase their products, interact with customers, 
@@ -140,8 +253,80 @@ const Product = () => {
               </p>
             </div>
           ) : (
-            <div>
-              <p className='italic text-[#7B746E]'>Reflections are currently being curated.</p>
+            <div className='flex flex-col gap-12'>
+              {/* Review Form */}
+              {token && canReview && (
+                <div className='bg-white p-8 border border-gray-200'>
+                  <h3 className='font-sans text-sm tracking-widest uppercase text-[#2C2723] mb-6'>{hasReviewed ? 'Edit your reflection' : 'Leave a reflection'}</h3>
+                  <form onSubmit={submitReview} className='flex flex-col gap-6'>
+                    <div>
+                      <label className='block font-sans text-xs uppercase tracking-widest text-[#7B746E] mb-2'>Rating</label>
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            type="button"
+                            key={star}
+                            onClick={() => setRating(star)}
+                            className={`text-2xl ${star <= rating ? "text-yellow-500" : "text-gray-300"} hover:text-yellow-400 transition-colors`}
+                          >
+                            ★
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className='block font-sans text-xs uppercase tracking-widest text-[#7B746E] mb-2'>Review</label>
+                      <textarea 
+                        className='w-full border border-gray-300 p-4 outline-none focus:border-[#2C2723] font-sans text-sm min-h-[100px]'
+                        placeholder='Share your thoughts about this piece...'
+                        value={reviewText}
+                        onChange={(e) => setReviewText(e.target.value)}
+                        required
+                      ></textarea>
+                    </div>
+                    <div className='flex gap-4'>
+                      <button type="submit" className='bg-[#2C2723] text-[#F8F5F1] px-8 py-3 font-sans text-xs tracking-widest uppercase hover:bg-black transition-colors'>
+                        {hasReviewed ? 'Update Reflection' : 'Post Reflection'}
+                      </button>
+                      {hasReviewed && (
+                         <button type="button" onClick={deleteReview} className='border border-red-200 text-red-500 px-8 py-3 font-sans text-xs tracking-widest uppercase hover:bg-red-50 transition-colors'>
+                           Delete Reflection
+                         </button>
+                      )}
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {!token && (
+                 <p className='font-sans text-sm text-[#7B746E]'>Please log in to leave a reflection.</p>
+              )}
+              {token && !canReview && !hasReviewed && (
+                 <p className='font-sans text-sm text-[#7B746E]'>You can only leave a reflection after purchasing and receiving this piece.</p>
+              )}
+
+              {/* Reviews List */}
+              <div className='flex flex-col gap-8'>
+                {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                    <div key={review._id} className='border-b border-gray-200 pb-8'>
+                      <div className='flex items-center justify-between mb-4'>
+                         <div className='flex items-center gap-4'>
+                           <p className='font-sans text-sm font-bold text-[#2C2723]'>{review.userName}</p>
+                           <span className='bg-green-100 text-green-800 text-[10px] font-sans px-2 py-1 uppercase tracking-widest'>Verified Purchase</span>
+                         </div>
+                         <p className='font-sans text-xs text-[#7B746E]'>{new Date(review.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <div className='mb-4'>
+                        {renderStars(review.rating)}
+                      </div>
+                      <p className='font-serif text-base text-gray-600'>{review.reviewText}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className='italic text-[#7B746E] font-serif'>No reflections yet for this piece.</p>
+                )}
+              </div>
             </div>
           )}
         </div>

@@ -49,6 +49,14 @@ const productSchema = new mongoose.Schema({
         type: Date, 
         default: Date.now,
         required: true 
+    },
+    averageRating: {
+        type: Number,
+        default: 0
+    },
+    totalReviews: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true // Automatically adds createdAt and updatedAt

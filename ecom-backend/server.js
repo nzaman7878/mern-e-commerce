@@ -9,6 +9,7 @@ import cartRouter from './routes/cartRoute.js';
 import orderRouter from './routes/orderRoute.js';
 import categoryRouter from './routes/categoryRoute.js';
 import adminRouter from './routes/adminRoute.js';
+import reviewRouter from './routes/reviewRoute.js';
 
 // App config
 const app = express();
@@ -30,6 +31,7 @@ app.use('/api/category', categoryRouter);
 app.use('/api/cart', cartRouter)
 app.use('/api/order',orderRouter)
 app.use('/api/admin', adminRouter)
+app.use('/api/reviews', reviewRouter)
 app.get('/', (req, res) => {
     res.send('API Working');
 });

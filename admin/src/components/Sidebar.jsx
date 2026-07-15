@@ -44,6 +44,11 @@ const Sidebar = () => {
                 <span className='text-lg opacity-70'>📦</span>
                 <p>Orders</p>
             </NavLink>
+
+            <NavLink className={navLinkClass} to="/reviews">
+                <span className='text-lg opacity-70'>⭐</span>
+                <p>Reviews</p>
+            </NavLink>
         </nav>
     </aside>
   )
