@@ -6,10 +6,14 @@ import discountModel from '../models/discountModel.js';
 // Helper to apply active discounts to products
 const applyDiscountsToProducts = async (products) => {
     const currentDate = new Date();
+    // Use lenient timezone check (allow 24 hours leeway)
+    const lenientStart = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
+    const lenientEnd = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+    
     const activeDiscounts = await discountModel.find({
         isActive: true,
-        startDate: { $lte: currentDate },
-        endDate: { $gte: currentDate }
+        startDate: { $lte: lenientStart },
+        endDate: { $gte: lenientEnd }
     });
 
     const isArray = Array.isArray(products);

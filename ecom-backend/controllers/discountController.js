@@ -64,10 +64,13 @@ const listDiscounts = async (req, res) => {
 const activeDiscounts = async (req, res) => {
     try {
         const currentDate = new Date();
+        const lenientStart = new Date(currentDate.getTime() + 24 * 60 * 60 * 1000);
+        const lenientEnd = new Date(currentDate.getTime() - 24 * 60 * 60 * 1000);
+        
         const discounts = await discountModel.find({
             isActive: true,
-            startDate: { $lte: currentDate },
-            endDate: { $gte: currentDate }
+            startDate: { $lte: lenientStart },
+            endDate: { $gte: lenientEnd }
         });
         res.json({ success: true, discounts });
     } catch (error) {
