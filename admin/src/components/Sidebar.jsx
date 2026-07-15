@@ -49,6 +49,16 @@ const Sidebar = () => {
                 <span className='text-lg opacity-70'>⭐</span>
                 <p>Reviews</p>
             </NavLink>
+
+            <NavLink className={navLinkClass} to="/discounts">
+                <span className='text-lg opacity-70'>📉</span>
+                <p>Discounts</p>
+            </NavLink>
+
+            <NavLink className={navLinkClass} to="/coupons">
+                <span className='text-lg opacity-70'>🎟️</span>
+                <p>Coupons</p>
+            </NavLink>
         </nav>
     </aside>
   )

@@ -25,6 +25,54 @@ const PlaceOrder = () => {
     firstName: '', lastName: '', email: '', street: '', city: '', state: '', zipcode: '', country: '', phone: ''
   });
 
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState('');
+  const [calculationData, setCalculationData] = useState(null);
+
+  const calculateTotals = async () => {
+    try {
+      let orderItems = []
+      for(const items in cartItems){
+        for(const item in cartItems[items]){
+          if(cartItems[items][item] > 0){
+            const itemInfo = structuredClone(products.find(product => product._id === items))
+            if (itemInfo) {
+              itemInfo.size = item
+              itemInfo.quantity = cartItems[items][item]
+              orderItems.push(itemInfo)
+            }
+          }
+        }
+      }
+      
+      if (orderItems.length === 0) return;
+
+      const response = await axios.post(backendUrl + '/api/cart/calculate', { 
+        items: orderItems, 
+        couponCode: appliedCoupon,
+        userId: userId
+      }, { headers: { token } });
+
+      if (response.data.success) {
+        setCalculationData(response.data.calculation);
+        if (response.data.calculation.couponError && appliedCoupon) {
+          toast.error(response.data.calculation.couponError);
+          setAppliedCoupon(''); // clear invalid coupon
+        } else if (response.data.calculation.couponApplied && appliedCoupon) {
+          toast.success("Coupon applied successfully!");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (token) {
+      calculateTotals();
+    }
+  }, [cartItems, appliedCoupon, token]);
+
   useEffect(() => {
     if (userData && userData.addresses && userData.addresses.length > 0) {
       const defaultAddr = userData.addresses.find(a => a.isDefault);
@@ -103,7 +151,7 @@ const PlaceOrder = () => {
         userId,
         address: formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee
+        couponCode: appliedCoupon
       }
 
       switch(method) {
@@ -220,8 +268,30 @@ const PlaceOrder = () => {
         {/* Order Summary */}
         <div className='w-full lg:w-2/5'>
           <div className='lg:sticky lg:top-32'>
+            
+            {/* Coupon Input */}
+            <div className='mb-8 border border-[#2C2723]/20 p-4'>
+              <h3 className='font-sans text-xs tracking-widest uppercase mb-4'>Discount Code</h3>
+              <div className='flex gap-2'>
+                <input 
+                  type="text" 
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Enter coupon code" 
+                  className='flex-1 border-b border-[#2C2723]/30 bg-transparent outline-none py-2 font-sans text-sm uppercase'
+                />
+                <button 
+                  type="button"
+                  onClick={() => setAppliedCoupon(couponCode)}
+                  className='bg-[#2C2723] text-[#F8F5F1] px-4 py-2 font-sans text-xs tracking-widest uppercase hover:bg-black transition-colors'
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+
             <div className='mb-12'>
-              <CartTotal />
+              <CartTotal calculationData={calculationData} />
             </div>
             
             <div className='mt-12'>

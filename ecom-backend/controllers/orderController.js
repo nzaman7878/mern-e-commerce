@@ -1,33 +1,56 @@
 import orderModel from '../models/orderModel.js'
 import userModel from '../models/userModel.js' 
+import couponModel from '../models/couponModel.js'
 import Stripe from 'stripe'
 import razorpay from 'razorpay'
+import { calculateOrderTotals } from './checkoutController.js'
 
 // global variables
 const currency = 'inr'
 const deliveryCharge = 10
 
 // gateway initialize 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY) // Fixed: STRIPE_SERECT_KEY -> STRIPE_SECRET_KEY
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-//Placing orders using COD method 
+// Helper to handle coupon usage
+const incrementCouponUsage = async (couponApplied) => {
+    if (couponApplied) {
+        try {
+            await couponModel.findByIdAndUpdate(couponApplied._id, { $inc: { usedCount: 1 } });
+        } catch (error) {
+            console.log("Error incrementing coupon usage:", error);
+        }
+    }
+}
+
+// Placing orders using COD method 
 const placeOrder = async (req, res) => {
     try {
-        const {userId, items, amount, address} = req.body;
+        const { userId, items, address, couponCode } = req.body;
+
+        // Securely calculate the actual amount on the backend
+        const calculation = await calculateOrderTotals(items, couponCode, userId);
+        if (calculation.couponError) {
+            return res.status(400).json({ success: false, message: calculation.couponError });
+        }
+
+        const finalAmount = calculation.finalTotal + deliveryCharge;
 
         const orderData = {
             userId,
-            items,
-            amount, 
+            items: calculation.finalItems, // Save the items with their discounted prices
+            amount: finalAmount, 
             address,
             status: 'Order Placed', 
             paymentMethod: 'COD',
             payment: false,
             date: Date.now()
         }
-    //Placing orders using COD method 
+        
         const newOrder = new orderModel(orderData)
         await newOrder.save()
+
+        await incrementCouponUsage(calculation.couponApplied);
 
         await userModel.findByIdAndUpdate(userId, {cartData: {}})
 
@@ -44,16 +67,23 @@ const placeOrder = async (req, res) => {
     }
 }
 
-//Placing orders using Stripe method 
+// Placing orders using Stripe method 
 const placeOrderStripe = async (req, res) => {
     try {
-        const {userId, items, amount, address} = req.body;
-        const {origin} = req.headers;
+        const { userId, items, address, couponCode } = req.body;
+        const { origin } = req.headers;
+
+        const calculation = await calculateOrderTotals(items, couponCode, userId);
+        if (calculation.couponError) {
+            return res.status(400).json({ success: false, message: calculation.couponError });
+        }
+
+        const finalAmount = calculation.finalTotal + deliveryCharge;
 
         const orderData = {
             userId,
-            items,
-            amount, 
+            items: calculation.finalItems,
+            amount: finalAmount, 
             address,
             status: 'Order Placed', 
             paymentMethod: 'Stripe',
@@ -64,16 +94,32 @@ const placeOrderStripe = async (req, res) => {
         const newOrder = new orderModel(orderData)
         await newOrder.save()
         
-        const line_items = items.map((item) => ({
+        // Prepare Stripe line items using the securely discounted unit prices
+        const line_items = calculation.finalItems.map((item) => ({
             price_data: {
                 currency: currency,
                 product_data: {
                     name: item.name
                 },
-                unit_amount: item.price * 100
+                unit_amount: Math.round(item.price * 100)
             },
             quantity: item.quantity
         }))
+
+        // If a coupon was applied, we add it as a negative discount line item or just distribute the discount.
+        // Stripe doesn't allow negative line items easily. 
+        // A better approach is to create a Stripe Coupon on the fly, but for simplicity, 
+        // if couponDiscount > 0, we can add a 'Coupon Applied' line item... wait, Stripe requires amount > 0.
+        // To fix this without Stripe Coupons, we can apply the coupon proportionally to items or use Stripe discounts array.
+        // For production-readiness, we'll use `discounts` if we want, or adjust `unit_amount` proportionally.
+        // Let's adjust `unit_amount` proportionally to avoid complex Stripe Coupon syncs.
+        
+        if (calculation.couponDiscount > 0) {
+            const discountRatio = calculation.finalTotal / calculation.subtotal;
+            line_items.forEach(li => {
+                li.price_data.unit_amount = Math.round(li.price_data.unit_amount * discountRatio);
+            });
+        }
 
         line_items.push({
             price_data: {
@@ -81,7 +127,7 @@ const placeOrderStripe = async (req, res) => {
                 product_data: {
                     name: 'Delivery Charges'
                 },
-                unit_amount: deliveryCharge * 100 // Fixed: delivery -> deliveryCharge
+                unit_amount: deliveryCharge * 100
             },
             quantity: 1
         })
@@ -93,6 +139,8 @@ const placeOrderStripe = async (req, res) => {
             mode: 'payment',
         })
 
+        await incrementCouponUsage(calculation.couponApplied);
+
         res.json({success: true, session_url: session.url});
 
     } catch (error) {
@@ -101,15 +149,22 @@ const placeOrderStripe = async (req, res) => {
     }
 }
 
-//Placing orders using Razorpay method 
+// Placing orders using Razorpay method 
 const placeOrderRazorpay = async (req, res) => {
     try {
-        const {userId, items, amount, address} = req.body;
+        const { userId, items, address, couponCode } = req.body;
+
+        const calculation = await calculateOrderTotals(items, couponCode, userId);
+        if (calculation.couponError) {
+            return res.status(400).json({ success: false, message: calculation.couponError });
+        }
+
+        const finalAmount = calculation.finalTotal + deliveryCharge;
 
         const orderData = {
             userId,
-            items,
-            amount, 
+            items: calculation.finalItems,
+            amount: finalAmount, 
             address,
             status: 'Order Placed', 
             paymentMethod: 'Razorpay',
@@ -120,11 +175,7 @@ const placeOrderRazorpay = async (req, res) => {
         const newOrder = new orderModel(orderData)
         await newOrder.save()
 
-        // Add Razorpay implementation here
-        // const razorpay = new Razorpay({
-        //     key_id: process.env.RAZORPAY_KEY_ID,
-        //     key_secret: process.env.RAZORPAY_KEY_SECRET
-        // })
+        await incrementCouponUsage(calculation.couponApplied);
 
         res.json({
             success: true,
@@ -140,7 +191,7 @@ const placeOrderRazorpay = async (req, res) => {
     }
 }
 
-//All orders data for Admin Panel 
+// All orders data for Admin Panel 
 const allOrders = async (req, res) => {
     try {
         const orders = await orderModel.find({})
@@ -212,4 +263,4 @@ const verifyStripe = async (req, res) => {
     }
 }
 
-export { verifyStripe, placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus}
+export { verifyStripe, placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus }

@@ -10,6 +10,8 @@ import Edit from './pages/Edit'
 import List from './pages/List'
 import Orders from './pages/Orders'
 import Reviews from './pages/Reviews'
+import Discounts from './pages/Discounts'
+import Coupons from './pages/Coupons'
 import Login from './components/Login'
  import { ToastContainer } from 'react-toastify';
 
@@ -51,6 +53,8 @@ useEffect(() => {
                     <Route path='/list' element={<List token={token} />} />
                     <Route path='/orders' element={<Orders token={token} />} />
                     <Route path='/reviews' element={<Reviews token={token} />} />
+                    <Route path='/discounts' element={<Discounts token={token} />} />
+                    <Route path='/coupons' element={<Coupons token={token} />} />
                   </Routes>
                 </div>
               </main>
