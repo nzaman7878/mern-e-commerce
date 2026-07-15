@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 const Discounts = ({ token }) => {
   const [discounts, setDiscounts] = useState([])
   const [showForm, setShowForm] = useState(false)
+  const [editId, setEditId] = useState(null)
   const [formData, setFormData] = useState({
     name: '',
     type: 'percentage',
@@ -38,11 +39,16 @@ const Discounts = ({ token }) => {
     e.preventDefault()
     try {
       const payload = { ...formData, targetIds: formData.targetIds.split(',').map(id => id.trim()).filter(id => id) }
-      const response = await axios.post(backendUrl + '/api/discounts/add', payload, { headers: { token } })
+      if (editId) payload.id = editId
+      
+      const endpoint = editId ? '/api/discounts/update' : '/api/discounts/add'
+      const response = await axios.post(backendUrl + endpoint, payload, { headers: { token } })
+      
       if (response.data.success) {
         toast.success(response.data.message)
         fetchDiscounts()
         setShowForm(false)
+        setEditId(null)
         setFormData({ name: '', type: 'percentage', value: '', targetType: 'sitewide', targetIds: '', startDate: '', endDate: '', isActive: true })
       } else {
         toast.error(response.data.message)
@@ -50,6 +56,22 @@ const Discounts = ({ token }) => {
     } catch (error) {
       toast.error(error.message)
     }
+  }
+
+  const handleEdit = (discount) => {
+    setEditId(discount._id);
+    setFormData({
+      name: discount.name,
+      type: discount.type,
+      value: discount.value,
+      targetType: discount.targetType,
+      targetIds: discount.targetIds ? discount.targetIds.join(', ') : '',
+      startDate: new Date(discount.startDate).toISOString().split('T')[0],
+      endDate: new Date(discount.endDate).toISOString().split('T')[0],
+      isActive: discount.isActive
+    });
+    setShowForm(true);
+    window.scrollTo(0, 0);
   }
 
   const handleDelete = async (id) => {
@@ -86,7 +108,13 @@ const Discounts = ({ token }) => {
     <div className='p-6'>
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-semibold text-slate-800'>Product Discounts</h1>
-        <button onClick={() => setShowForm(!showForm)} className='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition'>
+        <button onClick={() => {
+            setShowForm(!showForm);
+            if(showForm) {
+                setEditId(null);
+                setFormData({ name: '', type: 'percentage', value: '', targetType: 'sitewide', targetIds: '', startDate: '', endDate: '', isActive: true })
+            }
+        }} className='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition'>
           {showForm ? 'Cancel' : 'Add Discount'}
         </button>
       </div>
@@ -133,7 +161,9 @@ const Discounts = ({ token }) => {
               <input type="date" required value={formData.endDate} onChange={(e) => setFormData({...formData, endDate: e.target.value})} className='w-full border rounded-md p-2' />
             </div>
           </div>
-          <button type="submit" className='bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition'>Save Discount</button>
+          <button type="submit" className='bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition'>
+            {editId ? 'Update Discount' : 'Save Discount'}
+          </button>
         </form>
       )}
 
@@ -164,7 +194,8 @@ const Discounts = ({ token }) => {
                       {discount.isActive ? 'Active' : 'Inactive'}
                     </button>
                   </td>
-                  <td className='px-6 py-4'>
+                  <td className='px-6 py-4 flex gap-3'>
+                    <button onClick={() => handleEdit(discount)} className='text-blue-600 hover:underline'>Edit</button>
                     <button onClick={() => handleDelete(discount._id)} className='text-red-600 hover:underline'>Delete</button>
                   </td>
                 </tr>

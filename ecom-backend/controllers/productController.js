@@ -1,12 +1,73 @@
 import {v2 as cloudinary} from 'cloudinary';
 
 import productModel from '../models/productModel.js';
+import discountModel from '../models/discountModel.js';
+
+// Helper to apply active discounts to products
+const applyDiscountsToProducts = async (products) => {
+    const currentDate = new Date();
+    const activeDiscounts = await discountModel.find({
+        isActive: true,
+        startDate: { $lte: currentDate },
+        endDate: { $gte: currentDate }
+    });
+
+    const isArray = Array.isArray(products);
+    const productsList = isArray ? products : [products];
+
+    const updatedProducts = productsList.map(product => {
+        let itemDiscountAmount = 0;
+        let bestDiscount = null;
+        const originalPrice = product.price;
+
+        for (const discount of activeDiscounts) {
+            let applies = false;
+            if (discount.targetType === 'sitewide') applies = true;
+            else if (discount.targetType === 'category' && discount.targetIds.includes(product.category)) applies = true;
+            else if (discount.targetType === 'subCategory' && discount.targetIds.includes(product.subCategory)) applies = true;
+            else if (discount.targetType === 'product' && discount.targetIds.includes(String(product._id))) applies = true;
+
+            if (applies) {
+                let currentDiscountAmt = 0;
+                if (discount.type === 'percentage') {
+                    currentDiscountAmt = (originalPrice * discount.value) / 100;
+                } else if (discount.type === 'fixed') {
+                    currentDiscountAmt = discount.value;
+                }
+
+                if (currentDiscountAmt > itemDiscountAmount) {
+                    itemDiscountAmount = currentDiscountAmt;
+                    bestDiscount = discount;
+                }
+            }
+        }
+
+        const discountedPrice = Math.max(0, originalPrice - itemDiscountAmount);
+        
+        let productObj = product.toObject ? product.toObject() : { ...product };
+        
+        if (itemDiscountAmount > 0) {
+            productObj.originalPrice = originalPrice;
+            productObj.price = discountedPrice;
+            productObj.discountInfo = {
+                type: bestDiscount.type,
+                value: bestDiscount.value,
+                amountSaved: itemDiscountAmount,
+                percentageSaved: Math.round((itemDiscountAmount / originalPrice) * 100)
+            };
+        }
+        
+        return productObj;
+    });
+
+    return isArray ? updatedProducts : updatedProducts[0];
+};
 
 // Function to add a new product
 const addProduct = async (req, res) => {
   try {
     
-    const { name, description, price, category, subCategory, sizes, bestseller } = req.body;
+    const { name, description, price, category, subCategory, sizes, bestseller, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
 
     
     const image1 = req.files.image1 && req.files.image1[0];
@@ -49,6 +110,21 @@ const addProduct = async (req, res) => {
     const product = new productModel(productData);
     await product.save();
 
+    // Handle Discount
+    if (discountType && discountValue && discountStartDate && discountEndDate) {
+        const newDiscount = new discountModel({
+            name: `${name} Special Discount`,
+            type: discountType,
+            value: Number(discountValue),
+            targetType: 'product',
+            targetIds: [String(product._id)],
+            startDate: new Date(discountStartDate),
+            endDate: new Date(discountEndDate),
+            isActive: true
+        });
+        await newDiscount.save();
+    }
+
     res.json({
       success: true,
       message: 'Product added successfully',
@@ -72,11 +148,12 @@ const addProduct = async (req, res) => {
 const listProducts = async (req, res) => {
   try {
     const products = await productModel.find({}); 
+    const productsWithDiscounts = await applyDiscountsToProducts(products);
 
     res.json({
       success: true,
       message: 'Products fetched successfully',
-      products
+      products: productsWithDiscounts
     });
   } catch (error) {
     console.error('Error in Remove Product:', error);
@@ -148,10 +225,12 @@ const singleProduct = async (req, res) => {
       });
     }
 
+    const productWithDiscount = await applyDiscountsToProducts(product);
+
     res.json({
       success: true,
       message: 'Product fetched successfully',
-      product,
+      product: productWithDiscount,
     });
   } catch (error) {
     console.error('Error in singleProduct:', error); 
@@ -165,7 +244,7 @@ const singleProduct = async (req, res) => {
 // Function to update a product
 const updateProduct = async (req, res) => {
   try {
-    const { id, name, description, price, category, subCategory, sizes, bestseller } = req.body;
+    const { id, name, description, price, category, subCategory, sizes, bestseller, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
 
     if (!id) {
       return res.status(400).json({ success: false, message: 'Product ID is required.' });
@@ -205,6 +284,30 @@ const updateProduct = async (req, res) => {
 
     if (!updatedProduct) {
       return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+
+    // Handle Discount
+    if (discountType && discountValue && discountStartDate && discountEndDate) {
+        const discountPayload = {
+            name: `${name} Special Discount`,
+            type: discountType,
+            value: Number(discountValue),
+            targetType: 'product',
+            targetIds: [String(id)],
+            startDate: new Date(discountStartDate),
+            endDate: new Date(discountEndDate),
+            isActive: true
+        };
+
+        const existingDiscount = await discountModel.findOne({ targetType: 'product', targetIds: String(id) });
+        if (existingDiscount) {
+            await discountModel.findByIdAndUpdate(existingDiscount._id, discountPayload);
+        } else {
+            await (new discountModel(discountPayload)).save();
+        }
+    } else {
+        // If discount fields are empty, remove existing specific discount if any
+        await discountModel.findOneAndDelete({ targetType: 'product', targetIds: String(id) });
     }
 
     res.json({

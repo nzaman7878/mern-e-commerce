@@ -6,6 +6,7 @@ import { toast } from 'react-toastify'
 const Coupons = ({ token }) => {
   const [coupons, setCoupons] = useState([])
   const [showForm, setShowForm] = useState(false)
+  const [editId, setEditId] = useState(null)
   const [formData, setFormData] = useState({
     code: '',
     type: 'percentage',
@@ -37,11 +38,16 @@ const Coupons = ({ token }) => {
     e.preventDefault()
     try {
       const payload = { ...formData, usageLimit: formData.usageLimit === '' ? null : Number(formData.usageLimit) }
-      const response = await axios.post(backendUrl + '/api/coupons/add', payload, { headers: { token } })
+      if (editId) payload.id = editId
+
+      const endpoint = editId ? '/api/coupons/update' : '/api/coupons/add'
+      const response = await axios.post(backendUrl + endpoint, payload, { headers: { token } })
+      
       if (response.data.success) {
         toast.success(response.data.message)
         fetchCoupons()
         setShowForm(false)
+        setEditId(null)
         setFormData({ code: '', type: 'percentage', value: '', expirationDate: '', minOrderValue: 0, usageLimit: '', isActive: true })
       } else {
         toast.error(response.data.message)
@@ -49,6 +55,21 @@ const Coupons = ({ token }) => {
     } catch (error) {
       toast.error(error.message)
     }
+  }
+
+  const handleEdit = (coupon) => {
+    setEditId(coupon._id);
+    setFormData({
+      code: coupon.code,
+      type: coupon.type,
+      value: coupon.value,
+      expirationDate: new Date(coupon.expirationDate).toISOString().split('T')[0],
+      minOrderValue: coupon.minOrderValue || 0,
+      usageLimit: coupon.usageLimit || '',
+      isActive: coupon.isActive
+    });
+    setShowForm(true);
+    window.scrollTo(0, 0);
   }
 
   const handleDelete = async (id) => {
@@ -85,7 +106,13 @@ const Coupons = ({ token }) => {
     <div className='p-6'>
       <div className='flex justify-between items-center mb-6'>
         <h1 className='text-2xl font-semibold text-slate-800'>Coupons</h1>
-        <button onClick={() => setShowForm(!showForm)} className='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition'>
+        <button onClick={() => {
+            setShowForm(!showForm);
+            if(showForm) {
+                setEditId(null);
+                setFormData({ code: '', type: 'percentage', value: '', expirationDate: '', minOrderValue: 0, usageLimit: '', isActive: true })
+            }
+        }} className='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition'>
           {showForm ? 'Cancel' : 'Add Coupon'}
         </button>
       </div>
@@ -95,33 +122,35 @@ const Coupons = ({ token }) => {
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
             <div>
               <label className='block text-sm font-medium mb-1'>Code</label>
-              <input type="text" required value={formData.code} onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})} className='w-full border rounded-md p-2' />
+              <input type="text" required value={formData.code} onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })} className='w-full border rounded-md p-2' />
             </div>
             <div>
               <label className='block text-sm font-medium mb-1'>Type</label>
-              <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})} className='w-full border rounded-md p-2'>
+              <select value={formData.type} onChange={(e) => setFormData({ ...formData, type: e.target.value })} className='w-full border rounded-md p-2'>
                 <option value="percentage">Percentage</option>
                 <option value="fixed">Fixed Amount</option>
               </select>
             </div>
             <div>
               <label className='block text-sm font-medium mb-1'>Value</label>
-              <input type="number" required value={formData.value} onChange={(e) => setFormData({...formData, value: e.target.value})} className='w-full border rounded-md p-2' />
+              <input type="number" required value={formData.value} onChange={(e) => setFormData({ ...formData, value: e.target.value })} className='w-full border rounded-md p-2' />
             </div>
             <div>
               <label className='block text-sm font-medium mb-1'>Min Order Value</label>
-              <input type="number" value={formData.minOrderValue} onChange={(e) => setFormData({...formData, minOrderValue: e.target.value})} className='w-full border rounded-md p-2' />
+              <input type="number" value={formData.minOrderValue} onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value })} className='w-full border rounded-md p-2' />
             </div>
             <div>
               <label className='block text-sm font-medium mb-1'>Expiration Date</label>
-              <input type="date" required value={formData.expirationDate} onChange={(e) => setFormData({...formData, expirationDate: e.target.value})} className='w-full border rounded-md p-2' />
+              <input type="date" required value={formData.expirationDate} onChange={(e) => setFormData({ ...formData, expirationDate: e.target.value })} className='w-full border rounded-md p-2' />
             </div>
             <div>
               <label className='block text-sm font-medium mb-1'>Usage Limit (leave empty for unlimited)</label>
-              <input type="number" value={formData.usageLimit} onChange={(e) => setFormData({...formData, usageLimit: e.target.value})} className='w-full border rounded-md p-2' />
+              <input type="number" value={formData.usageLimit} onChange={(e) => setFormData({ ...formData, usageLimit: e.target.value })} className='w-full border rounded-md p-2' />
             </div>
           </div>
-          <button type="submit" className='bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition'>Save Coupon</button>
+          <button type="submit" className='bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition'>
+            {editId ? 'Update Coupon' : 'Save Coupon'}
+          </button>
         </form>
       )}
 
@@ -152,7 +181,8 @@ const Coupons = ({ token }) => {
                       {coupon.isActive ? 'Active' : 'Inactive'}
                     </button>
                   </td>
-                  <td className='px-6 py-4'>
+                  <td className='px-6 py-4 flex gap-3'>
+                    <button onClick={() => handleEdit(coupon)} className='text-blue-600 hover:underline'>Edit</button>
                     <button onClick={() => handleDelete(coupon._id)} className='text-red-600 hover:underline'>Delete</button>
                   </td>
                 </tr>

@@ -23,6 +23,13 @@ const Edit = ({ token }) => {
   const [subCategory, setSubCategory] = useState('')
   const [bestseller, setBestseller] = useState(false)
   const [sizes, setSizes] = useState([])
+  
+  // Discount Fields
+  const [discountType, setDiscountType] = useState('percentage')
+  const [discountValue, setDiscountValue] = useState('')
+  const [discountStartDate, setDiscountStartDate] = useState('')
+  const [discountEndDate, setDiscountEndDate] = useState('')
+  
   const [loading, setLoading] = useState(true)
   const [categoriesList, setCategoriesList] = useState([])
   const [subCategoriesList, setSubCategoriesList] = useState([])
@@ -44,6 +51,21 @@ const Edit = ({ token }) => {
           setBestseller(product.bestseller)
           setSizes(product.sizes)
           setExistingImages(product.image || [])
+          
+          // Fetch existing product discount if any
+          try {
+            const discRes = await axios.get(backendUrl + '/api/discounts/product/' + id, { headers: { token } })
+            if (discRes.data.success && discRes.data.discount) {
+               const disc = discRes.data.discount;
+               setDiscountType(disc.type);
+               setDiscountValue(disc.value);
+               setDiscountStartDate(new Date(disc.startDate).toISOString().split('T')[0]);
+               setDiscountEndDate(new Date(disc.endDate).toISOString().split('T')[0]);
+            }
+          } catch (e) {
+             console.error("Error fetching product discount", e)
+          }
+
         } else {
           toast.error(response.data.message)
         }
@@ -92,6 +114,13 @@ const Edit = ({ token }) => {
       formData.append('subCategory', subCategory);
       formData.append('bestseller', bestseller);
       formData.append('sizes', JSON.stringify(sizes));
+
+      if (discountValue) {
+        formData.append('discountType', discountType);
+        formData.append('discountValue', discountValue);
+        formData.append('discountStartDate', discountStartDate);
+        formData.append('discountEndDate', discountEndDate);
+      }
 
       const response = await axios.post(
         backendUrl + '/api/product/update',
@@ -259,6 +288,51 @@ const Edit = ({ token }) => {
               />
               <span className='text-sm font-medium text-slate-700 group-hover:text-slate-900'>Mark as Bestseller</span>
             </label>
+          </div>
+        </div>
+
+        {/* Product Discount Section */}
+        <div className='bg-white p-6 border border-gray-200 rounded-2xl shadow-sm space-y-6'>
+          <h3 className='text-base font-semibold text-slate-900'>Product Discount (Optional)</h3>
+          
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+            <div>
+              <label className='block text-sm font-medium text-slate-700 mb-2'>Discount Type</label>
+              <select onChange={(e) => setDiscountType(e.target.value)} value={discountType} className='w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-slate-100 focus:border-slate-400 transition-all bg-gray-50 focus:bg-white text-sm cursor-pointer'>
+                <option value="percentage">Percentage</option>
+                <option value="fixed">Fixed Amount</option>
+              </select>
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-slate-700 mb-2'>Discount Value</label>
+              <input
+                onChange={(e) => setDiscountValue(e.target.value)}
+                value={discountValue}
+                className='w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-slate-100 focus:border-slate-400 transition-all bg-gray-50 focus:bg-white text-sm'
+                type="number"
+                placeholder='e.g., 20'
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-slate-700 mb-2'>Start Date</label>
+              <input
+                onChange={(e) => setDiscountStartDate(e.target.value)}
+                value={discountStartDate}
+                className='w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-slate-100 focus:border-slate-400 transition-all bg-gray-50 focus:bg-white text-sm'
+                type="date"
+                required={!!discountValue}
+              />
+            </div>
+            <div>
+              <label className='block text-sm font-medium text-slate-700 mb-2'>End Date</label>
+              <input
+                onChange={(e) => setDiscountEndDate(e.target.value)}
+                value={discountEndDate}
+                className='w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-slate-100 focus:border-slate-400 transition-all bg-gray-50 focus:bg-white text-sm'
+                type="date"
+                required={!!discountValue}
+              />
+            </div>
           </div>
         </div>
 

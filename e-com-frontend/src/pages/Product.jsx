@@ -180,9 +180,23 @@ const Product = () => {
                 <span className='font-sans text-xs text-[#7B746E] uppercase tracking-widest'>({productData.totalReviews || 0} Reviews)</span>
               </div>
 
-              <p className='font-serif text-3xl italic text-[#7B746E]'>
-                {currency}{productData.price.toLocaleString()}
-              </p>
+              <div className='flex gap-4 items-center'>
+                {productData.originalPrice && productData.originalPrice > productData.price && (
+                  <p className='font-serif text-2xl italic text-gray-400 line-through'>
+                    {currency}{productData.originalPrice.toLocaleString()}
+                  </p>
+                )}
+                <p className='font-serif text-3xl italic text-[#7B746E]'>
+                  {currency}{productData.price.toLocaleString()}
+                </p>
+                {productData.discountInfo && (
+                  <div className='bg-[#C96A3C] text-white px-3 py-1 text-[10px] tracking-widest uppercase font-bold rounded-sm shadow-sm ml-2'>
+                    {productData.discountInfo.type === 'percentage' 
+                      ? `${productData.discountInfo.value}% OFF` 
+                      : `SAVE ${currency}${productData.discountInfo.value}`}
+                  </div>
+                )}
+              </div>
             </div>
             
             <p className='font-sans text-sm leading-loose text-gray-600 mb-12'>

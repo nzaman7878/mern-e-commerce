@@ -180,6 +180,8 @@ const Collection = () => {
               name={item.name}
               id={item._id}
               price={item.price}
+              originalPrice={item.originalPrice}
+              discountInfo={item.discountInfo}
               image={item.image}
             />
           ))}

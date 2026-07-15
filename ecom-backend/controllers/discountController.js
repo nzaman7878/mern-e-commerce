@@ -76,4 +76,19 @@ const activeDiscounts = async (req, res) => {
     }
 };
 
-export { addDiscount, updateDiscount, deleteDiscount, listDiscounts, activeDiscounts };
+// Fetch a product's specific discount
+const getProductDiscount = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const discount = await discountModel.findOne({ targetType: 'product', targetIds: id });
+        if (discount) {
+            res.json({ success: true, discount });
+        } else {
+            res.json({ success: true, discount: null });
+        }
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export { addDiscount, updateDiscount, deleteDiscount, listDiscounts, activeDiscounts, getProductDiscount };
