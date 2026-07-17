@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext'
+import { optimizeImage } from '../utils/imageOptimizer'
 
 const ProductItem = ({ id, name, price, originalPrice, discountInfo, image }) => {
   const { currency } = useContext(ShopContext);
@@ -24,7 +25,7 @@ const ProductItem = ({ id, name, price, originalPrice, discountInfo, image }) =>
       <div className='overflow-hidden bg-[#FDFBF8] aspect-[3/4] relative'>
         <img 
           className='w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:scale-110 group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-700 ease-out' 
-          src={image[0]} 
+          src={optimizeImage(image[0])} 
           alt={name} 
         />
         <div className='absolute inset-0 bg-gradient-to-t from-[#F8F5F1] to-transparent opacity-50 group-hover:opacity-20 transition-opacity duration-500'></div>

@@ -5,6 +5,7 @@ import { assets } from '../assets/frontend_assets/assets';
 import RelatedProducts from '../components/RelatedProducts';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { optimizeImage } from '../utils/imageOptimizer';
 
 const Product = () => {
   const { productId } = useParams();
@@ -21,16 +22,19 @@ const Product = () => {
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState('');
 
-  const fetchProductData = useCallback(() => {
-    if (products.length > 0) {
-      const foundProduct = products.find(item => item._id === productId);
-      if (foundProduct) {
-        setProductData(foundProduct);
+  const fetchProductData = useCallback(async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/api/product/single?productId=${productId}`);
+      if (response.data.success) {
+        setProductData(response.data.product);
       } else {
         setProductData(null);
       }
+    } catch (error) {
+      console.error("Error fetching product data:", error);
+      setProductData(null);
     }
-  }, [productId, products]);
+  }, [productId, backendUrl]);
 
   const fetchReviewsData = useCallback(async () => {
     try {
@@ -159,7 +163,7 @@ const Product = () => {
           {productData.image.map((item, index) => (
             <div key={index} className='w-full bg-gray-100 overflow-hidden'>
               <img 
-                src={item} 
+                src={optimizeImage(item)} 
                 className='w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-[2s] ease-out' 
                 alt={`Product view ${index + 1}`} 
               />

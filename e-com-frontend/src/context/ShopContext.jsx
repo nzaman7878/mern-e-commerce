@@ -147,27 +147,37 @@ const ShopContextProvider = (props) => {
     }
   }, [cartItems]);
 
-  // Fetch products from backend on mount
-  const getProductsData = async () => {
+  // Fetch product details for items in cart
+  const fetchCartProducts = async () => {
+    const itemIds = Object.keys(cartItems);
+    if (itemIds.length === 0) return;
+    
+    // Fetch only if there are IDs not already in `products`
+    const missingIds = itemIds.filter(id => !products.some(p => p._id === id));
+    if (missingIds.length === 0) return;
+
     try {
-      const response = await axios.get(backendUrl + "/api/product/list");
+      const response = await axios.post(backendUrl + "/api/product/multiple", { ids: missingIds });
       if (response.data.success) {
-        setProducts(response.data.products);
-      } else {
-        toast.error(response.data.message);
+        setProducts(prev => {
+           const newProducts = [...prev];
+           response.data.products.forEach(p => {
+             if (!newProducts.some(existing => existing._id === p._id)) {
+               newProducts.push(p);
+             }
+           });
+           return newProducts;
+        });
       }
     } catch (error) {
       console.log(error);
-      toast.error(
-        error.response?.data?.message || error.message || "Server Error"
-      );
     }
   };
 
   useEffect(() => {
-    getProductsData();
+    fetchCartProducts();
     // eslint-disable-next-line
-  }, []);
+  }, [cartItems]);
   const [userData, setUserData] = useState(null);
 
   const fetchUserData = async (currentToken) => {

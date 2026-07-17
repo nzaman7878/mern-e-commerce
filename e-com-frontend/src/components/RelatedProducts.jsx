@@ -5,18 +5,28 @@ import ProductItem from './ProductItem'
 
 const RelatedProducts = ({category, subCategory}) => {
 
-        const {products} = useContext(ShopContext);
+        const { backendUrl } = useContext(ShopContext);
         const [related, setRelated] = useState([]);
 
-        useEffect (()=>{
-            if (products.length > 0)
-            {let productsCopy = products.slice();
-
-            productsCopy = productsCopy.filter((item) => category === item.category);
-            productsCopy = productsCopy.filter((item)=> subCategory === item.subCategory);
-            setRelated(productsCopy.slice(0,5));}
-
-        }, [products])
+        useEffect (() => {
+            const fetchRelated = async () => {
+              try {
+                let url = `${backendUrl}/api/product/list?limit=5`;
+                if (category) url += `&category=${category}`;
+                if (subCategory) url += `&subCategory=${subCategory}`;
+                const response = await axios.get(url);
+                if (response.data.success) {
+                  setRelated(response.data.products);
+                }
+              } catch (error) {
+                console.error("Failed to fetch related products", error);
+              }
+            };
+            
+            if (category) {
+               fetchRelated();
+            }
+        }, [category, subCategory, backendUrl]);
 
   return (
     <div className='my-24'>

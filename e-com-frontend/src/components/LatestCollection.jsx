@@ -1,14 +1,29 @@
 import React, { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 import { ShopContext } from '../context/ShopContext';
 import ProductItem from './ProductItem';
+import { ProductSkeleton } from './Skeleton';
 
 const LatestCollection = () => {
-  const { products } = useContext(ShopContext);
+  const { backendUrl } = useContext(ShopContext);
   const [latestProducts, setLatestProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLatestProducts(products.slice(0, 6)); // Just 6 for a curated editorial look
-  }, [products]);
+    const fetchLatest = async () => {
+      try {
+        const response = await axios.get(backendUrl + '/api/product/list?limit=6');
+        if (response.data.success) {
+          setLatestProducts(response.data.products);
+        }
+      } catch (error) {
+        console.error('Failed to fetch latest products', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLatest();
+  }, [backendUrl]);
 
   return (
     <div id="collection" className='relative my-32 px-6 md:px-12 lg:px-24'>
@@ -59,18 +74,29 @@ const LatestCollection = () => {
 
           return (
             <div key={index} className={`${spanClass} ${marginClass}`}>
-              <ProductItem
-                id={item._id}
-                image={item.image}
-                name={item.name}
-                price={item.price}
-                originalPrice={item.originalPrice}
-                discountInfo={item.discountInfo}
-                index={index}
-              />
+              {loading ? (
+                 <ProductSkeleton />
+              ) : (
+                <ProductItem
+                  id={item._id}
+                  image={item.image}
+                  name={item.name}
+                  price={item.price}
+                  originalPrice={item.originalPrice}
+                  discountInfo={item.discountInfo}
+                  index={index}
+                />
+              )}
             </div>
           );
         })}
+        {loading && latestProducts.length === 0 && (
+           [...Array(6)].map((_, index) => (
+             <div key={index} className="md:col-span-4">
+               <ProductSkeleton />
+             </div>
+           ))
+        )}
       </div>
     </div>
   );

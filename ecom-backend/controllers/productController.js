@@ -149,21 +149,68 @@ const addProduct = async (req, res) => {
 
 //Function for list product
 
+//Function for list product
+
 const listProducts = async (req, res) => {
   try {
-    const products = await productModel.find({}); 
+    const { page, limit, search, category, subCategory, sortType, bestseller } = req.query;
+    
+    let query = {};
+    if (search) query.name = { $regex: search, $options: 'i' };
+    
+    // Support category and subCategory as arrays or comma-separated strings
+    if (category) {
+      const catArray = Array.isArray(category) ? category : category.split(',');
+      if (catArray.length > 0 && catArray[0] !== '') {
+        query.category = { $in: catArray };
+      }
+    }
+    
+    if (subCategory) {
+      const subCatArray = Array.isArray(subCategory) ? subCategory : subCategory.split(',');
+      if (subCatArray.length > 0 && subCatArray[0] !== '') {
+        query.subCategory = { $in: subCatArray };
+      }
+    }
+    
+    if (bestseller === 'true') query.bestseller = true;
+
+    let sortOption = {};
+    if (sortType === 'low - high') sortOption.price = 1;
+    else if (sortType === 'high - low') sortOption.price = -1;
+    else sortOption.createdAt = -1; // Default sort
+
+    const pageNum = Number(page) || 1;
+    const limitNum = Number(limit) || 0; // If 0, fetches all matching
+    
+    let productsQuery = productModel.find(query).sort(sortOption);
+    
+    if (limitNum > 0) {
+      productsQuery = productsQuery.skip((pageNum - 1) * limitNum).limit(limitNum);
+    }
+    
+    const products = await productsQuery;
+    const totalProducts = await productModel.countDocuments(query);
+    const totalPages = limitNum > 0 ? Math.ceil(totalProducts / limitNum) : 1;
+    
     const productsWithDiscounts = await applyDiscountsToProducts(products);
 
     res.json({
       success: true,
       message: 'Products fetched successfully',
-      products: productsWithDiscounts
+      products: productsWithDiscounts,
+      pagination: {
+        currentPage: pageNum,
+        totalPages,
+        totalProducts,
+        limit: limitNum
+      }
     });
   } catch (error) {
-    console.error('Error in Remove Product:', error);
+    console.error('Error in listProducts:', error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Something went wrong while list product'
+      message: error.message || 'Something went wrong while listing products'
     });
   }
 };
@@ -330,4 +377,25 @@ const updateProduct = async (req, res) => {
 };
 
 
-export { addProduct, listProducts, removeProduct, singleProduct, updateProduct };
+// Function to get multiple products by IDs (used for Cart/Orders)
+const getMultipleProducts = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!ids || !Array.isArray(ids)) {
+      return res.status(400).json({ success: false, message: 'Invalid product IDs array' });
+    }
+    const products = await productModel.find({ _id: { $in: ids } });
+    const productsWithDiscounts = await applyDiscountsToProducts(products);
+    
+    res.json({
+      success: true,
+      products: productsWithDiscounts
+    });
+  } catch (error) {
+    console.error('Error in getMultipleProducts:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch multiple products' });
+  }
+};
+
+
+export { addProduct, listProducts, removeProduct, singleProduct, updateProduct, getMultipleProducts };

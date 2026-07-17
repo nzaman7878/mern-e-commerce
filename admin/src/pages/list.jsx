@@ -3,26 +3,40 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { backendUrl, currency } from '../App'
 import { toast } from 'react-toastify'
+import { optimizeImage } from '../utils/imageOptimizer'
+import { TableRowSkeleton } from '../components/Skeleton'
 
 const List = ({ token }) => {
   const [list, setList] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('All')
   const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
   const [categoriesList, setCategoriesList] = useState([])
+  const [loading, setLoading] = useState(true)
   const itemsPerPage = 10
 
-  const fetchList = async () => {
+  const fetchList = async (page = 1, search = '', category = 'All') => {
+    setLoading(true)
     try {
-      const response = await axios.get(backendUrl + '/api/product/list')
+      let queryUrl = `${backendUrl}/api/product/list?page=${page}&limit=${itemsPerPage}`
+      if (search) queryUrl += `&search=${search}`
+      if (category !== 'All') queryUrl += `&category=${category}`
+
+      const response = await axios.get(queryUrl)
       if (response.data.success) {
         setList(response.data.products)
+        if (response.data.pagination) {
+          setTotalPages(response.data.pagination.totalPages)
+        }
       } else {
         toast.error(response.data.message)
       }
     } catch (error) {
       console.log(error)
       toast.error(error.response?.data?.message || "Server Error")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -35,7 +49,7 @@ const List = ({ token }) => {
       )
       if (response.data.success) {
         toast.success(response.data.message)
-        await fetchList()
+        await fetchList(currentPage, searchTerm, categoryFilter)
       } else {
         toast.error(response.data.message)
       }
@@ -46,7 +60,6 @@ const List = ({ token }) => {
   }
 
   useEffect(() => {
-    fetchList()
     const fetchCategories = async () => {
       try {
         const response = await axios.get(backendUrl + '/api/category/list')
@@ -61,18 +74,15 @@ const List = ({ token }) => {
     fetchCategories()
   }, [])
 
-  // Filter and Pagination logic
-  const filteredList = list.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = categoryFilter === 'All' || item.category === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+  // Refetch when filters or page change
+  // Debounce search slightly for better UX
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      fetchList(currentPage, searchTerm, categoryFilter)
+    }, 300)
 
-  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
-  const displayedList = filteredList.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchTerm, categoryFilter, currentPage])
 
   // Reset page to 1 when filters change
   useEffect(() => {
@@ -121,18 +131,21 @@ const List = ({ token }) => {
               </tr>
             </thead>
             <tbody className='text-sm divide-y divide-gray-100'>
-              {displayedList.length === 0 ? (
+              {loading ? (
+                // Show skeletons while loading
+                [...Array(5)].map((_, idx) => <TableRowSkeleton key={idx} />)
+              ) : list.length === 0 ? (
                 <tr>
                   <td colSpan="5" className="px-6 py-12 text-center text-slate-500">
                     No products found matching your criteria.
                   </td>
                 </tr>
               ) : (
-                displayedList.map((item) => (
+                list.map((item) => (
                   <tr key={item._id} className='hover:bg-gray-50/80 transition-colors group'>
                     <td className='px-6 py-3'>
                       <div className='w-12 h-12 rounded-lg border border-gray-200 overflow-hidden bg-gray-50'>
-                        <img className='w-full h-full object-cover' src={item.image[0]} alt={item.name} />
+                        <img className='w-full h-full object-cover' src={optimizeImage(item.image[0])} alt={item.name} />
                       </div>
                     </td>
                     <td className='px-6 py-4 font-medium text-slate-900'>
@@ -177,16 +190,16 @@ const List = ({ token }) => {
             </span>
             <div className='flex gap-2'>
               <button 
-                disabled={currentPage === 1}
+                disabled={currentPage === 1 || loading}
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                className={`px-4 py-2 border rounded-lg text-sm font-medium transition-all ${currentPage === 1 ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-200 text-slate-700 hover:bg-gray-50 hover:border-slate-300 shadow-sm'}`}
+                className={`px-4 py-2 border rounded-lg text-sm font-medium transition-all ${currentPage === 1 || loading ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-200 text-slate-700 hover:bg-gray-50 hover:border-slate-300 shadow-sm'}`}
               >
                 Previous
               </button>
               <button 
-                disabled={currentPage === totalPages}
+                disabled={currentPage === totalPages || loading}
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                className={`px-4 py-2 border rounded-lg text-sm font-medium transition-all ${currentPage === totalPages ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-200 text-slate-700 hover:bg-gray-50 hover:border-slate-300 shadow-sm'}`}
+                className={`px-4 py-2 border rounded-lg text-sm font-medium transition-all ${currentPage === totalPages || loading ? 'bg-gray-50 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-200 text-slate-700 hover:bg-gray-50 hover:border-slate-300 shadow-sm'}`}
               >
                 Next
               </button>

@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import { assets } from '../assets/frontend_assets/assets';
 import CartTotal from '../components/CartTotal';
+import { optimizeImage } from '../utils/imageOptimizer';
 
 const Cart = () => {
   const {products, currency, cartItems, updateQuantity, navigate} = useContext(ShopContext);
@@ -50,7 +51,7 @@ const Cart = () => {
                 className='py-8 border-b border-[#2C2723]/10 grid grid-cols-[1fr_auto] md:grid-cols-[1fr_auto_auto] items-center gap-8 group'
               >
                 <div className='flex items-center gap-8'>
-                  <img className='w-24 md:w-32 object-cover aspect-[4/5]' src={productData.image[0]} alt="" />
+                  <img className='w-24 md:w-32 object-cover aspect-[4/5]' src={optimizeImage(productData.image[0])} alt="" />
                   <div>
                     <p className='font-serif text-xl md:text-3xl mb-2'>
                       {productData.name}
