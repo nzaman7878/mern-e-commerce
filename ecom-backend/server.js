@@ -17,7 +17,7 @@ import couponRouter from './routes/couponRoute.js';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
-import xss from 'xss-clean';
+// xss-clean replaced with custom middleware import below
 
 // App config
 const app = express();
@@ -33,10 +33,34 @@ app.use(cors());
 app.use(helmet());
 
 // Data sanitization against NoSQL query injection
-app.use(mongoSanitize());
+// Using custom middleware because express-mongo-sanitize reassigns req.query which throws in Express 5
+app.use((req, res, next) => {
+  ['body', 'params', 'headers', 'query'].forEach((key) => {
+    if (req[key]) {
+      mongoSanitize.sanitize(req[key]);
+    }
+  });
+  next();
+});
+
+import { clean } from 'xss-clean/lib/xss.js';
 
 // Data sanitization against XSS
-app.use(xss());
+// Using custom middleware because xss-clean reassigns req.query which throws in Express 5
+app.use((req, res, next) => {
+  if (req.body) req.body = clean(req.body);
+  if (req.params) req.params = clean(req.params);
+  if (req.query) {
+    const cleanedQuery = clean(req.query);
+    for (const key in req.query) {
+      delete req.query[key];
+    }
+    for (const key in cleanedQuery) {
+      req.query[key] = cleanedQuery[key];
+    }
+  }
+  next();
+});
 
 // Rate limiting (limit each IP to 500 requests per 15 mins)
 const limiter = rateLimit({
