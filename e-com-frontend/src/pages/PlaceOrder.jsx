@@ -56,6 +56,9 @@ const PlaceOrder = () => {
 
       if (response.data.success) {
         setCalculationData(response.data.calculation);
+        if (response.data.calculation.stockError) {
+          toast.error(response.data.calculation.stockError);
+        }
         if (response.data.calculation.couponError && appliedCoupon) {
           toast.error(response.data.calculation.couponError);
           setAppliedCoupon(''); // clear invalid coupon

@@ -4,8 +4,8 @@ import { ShopContext } from '../context/ShopContext'
 function CartTotal({ calculationData }) {
     const {currency, delivery_fee, getCartAmount} = useContext(ShopContext);
 
-    // If we have calculation data from the backend, use it
-    if (calculationData) {
+    // If we have calculation data from the backend and it has baseTotal, use it
+    if (calculationData && calculationData.baseTotal !== undefined) {
         return (
             <div className='w-full'>
                 <div className='mb-8 border-b border-[#2C2723]/10 pb-4'>
