@@ -115,6 +115,61 @@ const PlaceOrder = () => {
     }
   };
 
+  const loadRazorpay = async () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  };
+
+  const initPay = (order) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: 'Order Payment',
+      description: 'Order Payment',
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async (response) => {
+        try {
+          const { data } = await axios.post(backendUrl + '/api/order/verifyRazorpay', {
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            userId,
+            orderId: order.receipt // order.receipt is our internal order _id
+          }, {headers: {token}})
+          if (data.success) {
+            navigate('/orders')
+            setCartItems({})
+            toast.success('Payment Successful')
+          }
+        } catch (error) {
+          console.log(error)
+          toast.error(error.message)
+        }
+      },
+      prefill: {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        contact: formData.phone
+      },
+      theme: {
+        color: "#2C2723"
+      }
+    }
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  }
+
   const onChangeHandler = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -174,9 +229,14 @@ const PlaceOrder = () => {
           }
           break;
         case 'razorpay':
+          const isScriptLoaded = await loadRazorpay();
+          if (!isScriptLoaded) {
+            toast.error("Razorpay SDK failed to load. Are you online?");
+            return;
+          }
           const responseRazorpay = await axios.post(backendUrl + '/api/order/razorpay', orderData, { headers: { token } })
           if (responseRazorpay.data.success) {
-            toast.success('Redirecting to Razorpay...')
+            initPay(responseRazorpay.data.order)
           } else {
             toast.error(responseRazorpay.data.message)
           }

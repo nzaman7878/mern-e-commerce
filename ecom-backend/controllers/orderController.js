@@ -4,6 +4,7 @@ import couponModel from '../models/couponModel.js'
 import Stripe from 'stripe'
 import razorpay from 'razorpay'
 import { calculateOrderTotals } from './checkoutController.js'
+import crypto from 'crypto'
 
 // global variables
 const currency = 'inr'
@@ -11,6 +12,11 @@ const deliveryCharge = 10
 
 // gateway initialize 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+
+const razorpayInstance = new razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+})
 
 // Helper to handle coupon usage
 const incrementCouponUsage = async (couponApplied) => {
@@ -175,11 +181,19 @@ const placeOrderRazorpay = async (req, res) => {
         const newOrder = new orderModel(orderData)
         await newOrder.save()
 
+        const options = {
+            amount: finalAmount * 100, // Amount in paise (1 INR = 100 paise)
+            currency: currency.toUpperCase(),
+            receipt: newOrder._id.toString()
+        }
+
+        const razorpayOrder = await razorpayInstance.orders.create(options)
+
         await incrementCouponUsage(calculation.couponApplied);
 
         res.json({
             success: true,
-            message: "Razorpay integration pending"
+            order: razorpayOrder
         })
 
     } catch (error) {
@@ -263,4 +277,36 @@ const verifyStripe = async (req, res) => {
     }
 }
 
-export { verifyStripe, placeOrder, placeOrderStripe, placeOrderRazorpay, allOrders, userOrders, updateStatus }
+// Verify Razorpay payment
+const verifyRazorpay = async (req, res) => {
+    try {
+        const { userId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+        const orderInfo = await orderModel.findById(req.body.receipt || req.body.orderId); // We pass order._id as receipt or orderId
+
+        if (!orderInfo) {
+             return res.json({ success: false, message: "Order not found" });
+        }
+
+        // Create expected signature
+        const expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
+            .update(razorpay_order_id + '|' + razorpay_payment_id)
+            .digest('hex');
+
+        if (expectedSignature === razorpay_signature) {
+            // Payment verified
+            await orderModel.findByIdAndUpdate(orderInfo._id, { payment: true });
+            await userModel.findByIdAndUpdate(userId, { cartData: {} });
+            res.json({ success: true, message: "Payment Successful" });
+        } else {
+            // Invalid signature
+            res.json({ success: false, message: "Invalid Signature" });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export { verifyStripe, placeOrder, placeOrderStripe, placeOrderRazorpay, verifyRazorpay, allOrders, userOrders, updateStatus }
