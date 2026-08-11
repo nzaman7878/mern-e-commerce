@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema({
         type: Object,
         default: {}
     },
+    wishlist: {
+        type: [String],
+        default: []
+    },
     phone: {
         type: String,
         default: ''

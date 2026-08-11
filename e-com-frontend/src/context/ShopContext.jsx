@@ -14,6 +14,7 @@ const ShopContextProvider = (props) => {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [token, setToken] = useState("");
+  const [wishlist, setWishlist] = useState([]);
 
   // Initialize cartItems from localStorage for persistence, fallback to {}
   const [cartItems, setCartItems] = useState(() => {
@@ -189,6 +190,7 @@ const ShopContextProvider = (props) => {
       );
       if (response.data.success) {
         setUserData(response.data.user);
+        setWishlist(response.data.user.wishlist || []);
       } else {
         console.warn(response.data.message);
       }
@@ -229,6 +231,37 @@ const ShopContextProvider = (props) => {
     }
   }, [token]);
 
+  const toggleWishlist = async (productId) => {
+    if (!token) {
+      toast.error('Please login to manage wishlist');
+      return;
+    }
+
+    // Optimistic update
+    let updatedWishlist = [...wishlist];
+    if (updatedWishlist.includes(productId)) {
+      updatedWishlist = updatedWishlist.filter(id => id !== productId);
+      toast.success('Removed from wishlist');
+    } else {
+      updatedWishlist.push(productId);
+      toast.success('Added to wishlist');
+    }
+    setWishlist(updatedWishlist);
+
+    try {
+      const response = await axios.post(backendUrl + '/api/user/wishlist/toggle', { userId: userData?._id, productId }, { headers: { token } });
+      if (!response.data.success) {
+        // Revert on failure
+        toast.error(response.data.message);
+        setWishlist(wishlist);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+      setWishlist(wishlist);
+    }
+  }
+
   const value = {
     products,
     currency,
@@ -249,6 +282,8 @@ const ShopContextProvider = (props) => {
     setToken,
     userData,
     fetchUserData,
+    wishlist,
+    toggleWishlist,
   };
 
   return (

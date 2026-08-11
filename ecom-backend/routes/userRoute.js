@@ -12,4 +12,7 @@ userRouter.post('/admin', userController.adminLogin);
 userRouter.post('/profile/get', authUser, userController.getUserProfile);
 userRouter.post('/profile/update', authUser, userController.updateUserProfile);
 
+// Wishlist route
+userRouter.post('/wishlist/toggle', authUser, userController.toggleWishlist);
+
 export default userRouter;

@@ -9,7 +9,7 @@ import { optimizeImage } from '../utils/imageOptimizer';
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart, backendUrl, token, userData } = useContext(ShopContext);
+  const { products, currency, addToCart, backendUrl, token, userData, wishlist, toggleWishlist } = useContext(ShopContext);
   const [productData, setProductData] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
   const [activeTab, setActiveTab] = useState('description');
@@ -222,13 +222,24 @@ const Product = () => {
               </div>
             </div>
             
-            <button  
-              onClick={() => addToCart(productData._id, selectedSize)}
-              className='w-full bg-[#2C2723] text-[#F8F5F1] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-              disabled={!selectedSize}
-            >
-              {selectedSize ? 'Add to Archive' : 'Select Size'}
-            </button>
+            <div className='flex gap-4 mt-8'>
+              <button  
+                onClick={() => addToCart(productData._id, selectedSize)}
+                className='flex-1 bg-[#2C2723] text-[#F8F5F1] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                disabled={!selectedSize}
+              >
+                {selectedSize ? 'Add to Archive' : 'Select Size'}
+              </button>
+              
+              <button 
+                onClick={() => toggleWishlist(productData._id)}
+                className={`w-14 flex items-center justify-center border border-[#2C2723] transition-colors ${wishlist?.includes(productData._id) ? 'bg-[#C96A3C] text-white border-[#C96A3C]' : 'bg-transparent text-[#2C2723] hover:bg-gray-100'}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill={wishlist?.includes(productData._id) ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 md:w-6 md:h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                </svg>
+              </button>
+            </div>
             
             <div className='mt-16 pt-8 border-t border-[#2C2723]/10 text-xs font-sans tracking-widest uppercase text-[#7B746E] flex flex-col gap-4'>
               <p>100% Original Documented Piece.</p>

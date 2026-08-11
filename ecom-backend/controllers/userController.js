@@ -191,4 +191,32 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-export default { loginUser, registerUser, adminLogin, getUserProfile, updateUserProfile };
+const toggleWishlist = async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.json({ success: false, message: 'User not found' });
+    }
+
+    let wishlist = user.wishlist || [];
+    const index = wishlist.indexOf(productId);
+
+    if (index > -1) {
+      wishlist.splice(index, 1);
+    } else {
+      wishlist.push(productId);
+    }
+
+    user.wishlist = wishlist;
+    await user.save();
+
+    res.json({ success: true, message: 'Wishlist updated', wishlist });
+  } catch (error) {
+    console.error('Toggle wishlist error:', error);
+    res.json({ success: false, message: 'Server Error' });
+  }
+};
+
+export default { loginUser, registerUser, adminLogin, getUserProfile, updateUserProfile, toggleWishlist };
