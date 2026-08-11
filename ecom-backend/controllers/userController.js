@@ -2,6 +2,8 @@ import validator from 'validator';
 import bcrypt from 'bcrypt';
 import userModel from '../models/userModel.js';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import { sendPasswordReset } from '../utils/mailer.js';
 
 // Function to create JWT token
 const createToken = (id) => {
@@ -219,4 +221,76 @@ const toggleWishlist = async (req, res) => {
   }
 };
 
-export default { loginUser, registerUser, adminLogin, getUserProfile, updateUserProfile, toggleWishlist };
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await userModel.findOne({ email });
+
+        if (!user) {
+            return res.json({ success: false, message: 'There is no user with that email address.' });
+        }
+
+        // Generate reset token
+        const resetToken = crypto.randomBytes(20).toString('hex');
+
+        // Hash token and set to resetPasswordToken field
+        user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+        
+        // Set expire time to 15 minutes
+        user.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+        await user.save({ validateBeforeSave: false });
+
+        // Create reset URL
+        const origin = req.headers.origin || 'http://localhost:5173';
+        const resetUrl = `${origin}/reset-password/${resetToken}`;
+
+        try {
+            await sendPasswordReset(user.email, resetUrl);
+            res.json({ success: true, message: 'Email sent with reset instructions' });
+        } catch (error) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpire = undefined;
+            await user.save({ validateBeforeSave: false });
+            return res.json({ success: false, message: 'Email could not be sent' });
+        }
+    } catch (error) {
+        console.error('Forgot password error:', error);
+        res.json({ success: false, message: 'Server Error' });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const { token, password } = req.body;
+
+        // Get hashed token
+        const resetPasswordToken = crypto.createHash('sha256').update(token).digest('hex');
+
+        const user = await userModel.findOne({
+            resetPasswordToken,
+            resetPasswordExpire: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.json({ success: false, message: 'Invalid or expired token' });
+        }
+
+        if (password.length < 8) {
+            return res.json({ success: false, message: 'Password must be at least 8 characters long' });
+        }
+
+        // Set new password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+        await user.save();
+
+        res.json({ success: true, message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        res.json({ success: false, message: 'Server Error' });
+    }
+};
+
+export default { loginUser, registerUser, adminLogin, getUserProfile, updateUserProfile, toggleWishlist, forgotPassword, resetPassword };

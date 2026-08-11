@@ -12,6 +12,7 @@ import Orders from './pages/Orders'
 import Journal from './pages/Journal'
 import Profile from './pages/Profile'
 import Wishlist from './pages/Wishlist'
+import ResetPassword from './pages/ResetPassword'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import SearchBar from './components/SearchBar'
@@ -37,6 +38,7 @@ function App() {
           <Route path='/cart' element={<Cart />} />
           <Route path='/wishlist' element={<Wishlist />} />
           <Route path='/login' element={<Login />} />
+          <Route path='/reset-password/:token' element={<ResetPassword />} />
           <Route path='/place-order' element={<PlaceOrder />} />
           <Route path='/orders' element={<Orders />} />
           <Route path='/verify' element={<Verify />} />

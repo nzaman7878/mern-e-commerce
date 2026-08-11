@@ -15,4 +15,8 @@ userRouter.post('/profile/update', authUser, userController.updateUserProfile);
 // Wishlist route
 userRouter.post('/wishlist/toggle', authUser, userController.toggleWishlist);
 
+// Password Reset Routes
+userRouter.post('/forgot-password', userController.forgotPassword);
+userRouter.post('/reset-password', userController.resetPassword);
+
 export default userRouter;

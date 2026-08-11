@@ -22,6 +22,14 @@ const Login = () => {
         } else {
           toast.error(response.data.message);
         }
+      } else if (currentState === 'Forgot Password') {
+        const response = await axios.post(backendUrl + '/api/user/forgot-password', { email });
+        if (response.data.success) {
+          toast.success(response.data.message);
+          setCurrentState('Login');
+        } else {
+          toast.error(response.data.message);
+        }
       } else {
         // Login
         const response = await axios.post(backendUrl + '/api/user/login', { email, password });
@@ -50,7 +58,7 @@ const Login = () => {
       <form onSubmit={onSubmitHandler} className='w-full max-w-md flex flex-col gap-12'>
         <div className='text-center mb-4'>
           <h1 className='font-serif text-5xl lg:text-7xl text-[#2C2723] leading-none'>
-            {currentState === 'Login' ? 'Sign In.' : 'Register.'}
+            {currentState === 'Login' ? 'Sign In.' : currentState === 'Sign Up' ? 'Register.' : 'Reset.'}
           </h1>
         </div>
 
@@ -83,18 +91,20 @@ const Login = () => {
             <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">Email Address</label>
           </div>
 
-          <div className='relative'>
-            <input
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-              className='peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm'
-              type='password'
-              placeholder=' '
-              required
-              autoComplete={currentState === 'Login' ? 'current-password' : 'new-password'}
-            />
-            <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">Password</label>
-          </div>
+          {currentState !== 'Forgot Password' && (
+            <div className='relative'>
+              <input
+                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                className='peer w-full border-b border-[#2C2723]/30 py-4 bg-transparent outline-none focus:border-[#2C2723] transition-colors font-sans text-sm'
+                type='password'
+                placeholder=' '
+                required
+                autoComplete={currentState === 'Login' ? 'current-password' : 'new-password'}
+              />
+              <label className="absolute left-0 top-4 text-[#7B746E] font-sans text-xs tracking-widest uppercase transition-all peer-focus:-top-4 peer-focus:text-[10px] peer-focus:text-[#2C2723] peer-not-placeholder-shown:-top-4 peer-not-placeholder-shown:text-[10px] peer-not-placeholder-shown:text-[#2C2723] pointer-events-none">Password</label>
+            </div>
+          )}
         </div>
 
         <div className='flex flex-col gap-6 mt-4'>
@@ -102,15 +112,17 @@ const Login = () => {
             type='submit'
             className='w-full bg-[#2C2723] text-[#F8F5F1] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors'
           >
-            {currentState === 'Login' ? 'Sign In' : 'Sign Up'}
+            {currentState === 'Login' ? 'Sign In' : currentState === 'Sign Up' ? 'Sign Up' : 'Send Link'}
           </button>
           
           <div className='w-full flex justify-between font-sans text-[10px] tracking-widest uppercase text-[#7B746E]'>
             {currentState === 'Login' ? (
               <>
-                <p className='cursor-pointer hover:text-[#2C2723] transition-colors'>Forgot Password?</p>
+                <p onClick={() => setCurrentState('Forgot Password')} className='cursor-pointer hover:text-[#2C2723] transition-colors'>Forgot Password?</p>
                 <p onClick={() => setCurrentState('Sign Up')} className='cursor-pointer hover:text-[#2C2723] transition-colors'>Create Account</p>
               </>
+            ) : currentState === 'Forgot Password' ? (
+              <p onClick={() => setCurrentState('Login')} className='cursor-pointer hover:text-[#2C2723] transition-colors w-full text-center'>Back to Login</p>
             ) : (
               <p onClick={() => setCurrentState('Login')} className='cursor-pointer hover:text-[#2C2723] transition-colors w-full text-center'>Already have an account? Sign In</p>
             )}

@@ -5,6 +5,7 @@ import Stripe from 'stripe'
 import razorpay from 'razorpay'
 import { calculateOrderTotals } from './checkoutController.js'
 import crypto from 'crypto'
+import { sendOrderConfirmation, sendShippingUpdate } from '../utils/mailer.js'
 
 // global variables
 const currency = 'inr'
@@ -59,6 +60,11 @@ const placeOrder = async (req, res) => {
         await incrementCouponUsage(calculation.couponApplied);
 
         await userModel.findByIdAndUpdate(userId, {cartData: {}})
+
+        const user = await userModel.findById(userId);
+        if (user && user.email) {
+            await sendOrderConfirmation(user.email, newOrder);
+        }
 
         res.json({
             success: true,
@@ -246,7 +252,13 @@ const updateStatus = async (req, res) => {
             updateData.payment = true
         }
         
-        await orderModel.findByIdAndUpdate(orderId, updateData)
+        const updatedOrder = await orderModel.findByIdAndUpdate(orderId, updateData, {new: true})
+        
+        const user = await userModel.findById(updatedOrder.userId);
+        if (user && user.email) {
+            await sendShippingUpdate(user.email, updatedOrder);
+        }
+
         res.json({success: true, message: 'Status Updated'})
         
     } catch (error) {
@@ -264,8 +276,14 @@ const verifyStripe = async (req, res) => {
         const {orderId, success} = req.body;
 
         if (success === "true") {
-            await orderModel.findByIdAndUpdate(orderId, {payment: true});
+            const updatedOrder = await orderModel.findByIdAndUpdate(orderId, {payment: true}, {new: true});
             await userModel.findByIdAndUpdate(req.body.userId, {cartData: {}});
+
+            const user = await userModel.findById(req.body.userId);
+            if (user && user.email && updatedOrder) {
+                await sendOrderConfirmation(user.email, updatedOrder);
+            }
+
             res.json({success: true, message: "Payment Successful"});
         } else {
             await orderModel.findByIdAndDelete(orderId);
@@ -295,8 +313,14 @@ const verifyRazorpay = async (req, res) => {
 
         if (expectedSignature === razorpay_signature) {
             // Payment verified
-            await orderModel.findByIdAndUpdate(orderInfo._id, { payment: true });
+            const updatedOrder = await orderModel.findByIdAndUpdate(orderInfo._id, { payment: true }, {new: true});
             await userModel.findByIdAndUpdate(userId, { cartData: {} });
+
+            const user = await userModel.findById(userId);
+            if (user && user.email && updatedOrder) {
+                await sendOrderConfirmation(user.email, updatedOrder);
+            }
+
             res.json({ success: true, message: "Payment Successful" });
         } else {
             // Invalid signature
