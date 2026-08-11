@@ -27,6 +27,16 @@ export const calculateOrderTotals = async (items, couponCode, userId) => {
         if (!product) continue;
 
         const quantity = item.quantity || 1;
+        const size = item.size;
+
+        if (size) {
+            const stockQuantities = product.stockQuantities || {};
+            const availableStock = stockQuantities[size] || 0;
+            if (quantity > availableStock) {
+                return { stockError: `Insufficient stock for ${product.name} (Size: ${size}). Available: ${availableStock}, Requested: ${quantity}.` };
+            }
+        }
+
         const originalPrice = product.price;
         let itemDiscountAmount = 0;
 
@@ -64,7 +74,8 @@ export const calculateOrderTotals = async (items, couponCode, userId) => {
             name: product.name,
             originalPrice,
             price: discountedPrice, // Discounted unit price
-            quantity
+            quantity,
+            size
         });
     }
 
@@ -113,7 +124,8 @@ export const calculateOrderTotals = async (items, couponCode, userId) => {
         finalTotal,
         finalItems,
         couponApplied,
-        couponError
+        couponError,
+        stockError: null
     };
 };
 

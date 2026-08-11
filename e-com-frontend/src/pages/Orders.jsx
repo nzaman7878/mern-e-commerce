@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import { ShopContext } from '../context/ShopContext'
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import ResponsiveImage from '../components/ResponsiveImage';
 
 const Orders = () => {
   const {backendUrl, token, currency} = useContext(ShopContext);
@@ -75,7 +76,7 @@ const Orders = () => {
             <div key={index} className='py-8 border-b border-[#2C2723]/10 flex flex-col md:flex-row md:items-center justify-between gap-8 group'>
               
               <div className='flex items-start gap-8'>
-                <img className='w-20 md:w-28 object-cover aspect-[4/5] grayscale group-hover:grayscale-0 transition-all duration-[2s] ease-out' src={item.image?.[0]} alt="" />
+                <ResponsiveImage className='w-20 md:w-28 object-cover aspect-[4/5] grayscale group-hover:grayscale-0 transition-all duration-[2s] ease-out' src={item.image?.[0]} alt={item.name} sizes="(max-width: 768px) 80px, 120px" />
                 
                 <div className='flex flex-col gap-3'>
                   <p className='font-serif text-xl md:text-2xl'>{item.name}</p>

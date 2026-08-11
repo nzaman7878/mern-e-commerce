@@ -41,6 +41,10 @@ const productSchema = new mongoose.Schema({
         required: true,
         enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
     },
+    stockQuantities: {
+        type: Object,
+        default: {}
+    },
     bestseller: { 
         type: Boolean, 
         default: true 

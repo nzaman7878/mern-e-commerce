@@ -71,7 +71,7 @@ const applyDiscountsToProducts = async (products) => {
 const addProduct = async (req, res) => {
   try {
     
-    const { name, description, price, category, subCategory, sizes, bestseller, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
+    const { name, description, price, category, subCategory, sizes, stockQuantities, bestseller, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
 
     
     const image1 = req.files.image1 && req.files.image1[0];
@@ -105,6 +105,7 @@ const addProduct = async (req, res) => {
       category,
       subCategory,
       sizes: JSON.parse(sizes), 
+      stockQuantities: stockQuantities ? JSON.parse(stockQuantities) : {},
       image: imagesUrl,
       createdAt: new Date(),
       updatedAt: new Date()
@@ -295,7 +296,7 @@ const singleProduct = async (req, res) => {
 // Function to update a product
 const updateProduct = async (req, res) => {
   try {
-    const { id, name, description, price, category, subCategory, sizes, bestseller, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
+    const { id, name, description, price, category, subCategory, sizes, stockQuantities, bestseller, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
 
     if (!id) {
       return res.status(400).json({ success: false, message: 'Product ID is required.' });
@@ -316,6 +317,7 @@ const updateProduct = async (req, res) => {
       category,
       subCategory,
       sizes: sizes ? JSON.parse(sizes) : [],
+      stockQuantities: stockQuantities ? JSON.parse(stockQuantities) : {},
       updatedAt: new Date()
     };
 
@@ -393,9 +395,42 @@ const getMultipleProducts = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in getMultipleProducts:', error);
-    res.status(500).json({ success: false, message: 'Failed to fetch multiple products' });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
+// Function for search suggestions
+const searchSuggestions = async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            return res.json({ success: true, suggestions: [] });
+        }
+        
+        // Search by name using regex (case-insensitive)
+        const products = await productModel.find({
+            name: { $regex: query, $options: 'i' }
+        })
+        .select('name _id image price') // Only fetch necessary fields
+        .limit(5); // Limit suggestions to 5 items
+        
+        // Apply discounts to these products if any
+        const suggestions = await applyDiscountsToProducts(products);
 
-export { addProduct, listProducts, removeProduct, singleProduct, updateProduct, getMultipleProducts };
+        res.json({ success: true, suggestions });
+    } catch (error) {
+        console.error('Error fetching search suggestions:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+
+export {
+  listProducts,
+  addProduct,
+  removeProduct,
+  singleProduct,
+  updateProduct,
+  getMultipleProducts,
+  searchSuggestions
+};

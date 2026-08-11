@@ -1,5 +1,6 @@
 import orderModel from '../models/orderModel.js'
 import userModel from '../models/userModel.js' 
+import productModel from '../models/productModel.js'
 import couponModel from '../models/couponModel.js'
 import Stripe from 'stripe'
 import razorpay from 'razorpay'
@@ -18,6 +19,18 @@ const razorpayInstance = new razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_KEY_SECRET,
 })
+
+// Helper to deduct stock
+const deductStock = async (items) => {
+    for (const item of items) {
+        if (item.size && item.quantity > 0) {
+            const field = `stockQuantities.${item.size}`;
+            await productModel.findByIdAndUpdate(item._id, {
+                $inc: { [field]: -item.quantity }
+            });
+        }
+    }
+}
 
 // Helper to handle coupon usage
 const incrementCouponUsage = async (couponApplied) => {
@@ -40,6 +53,9 @@ const placeOrder = async (req, res) => {
         if (calculation.couponError) {
             return res.status(400).json({ success: false, message: calculation.couponError });
         }
+        if (calculation.stockError) {
+            return res.status(400).json({ success: false, message: calculation.stockError });
+        }
 
         const finalAmount = calculation.finalTotal + deliveryCharge;
 
@@ -58,6 +74,7 @@ const placeOrder = async (req, res) => {
         await newOrder.save()
 
         await incrementCouponUsage(calculation.couponApplied);
+        await deductStock(calculation.finalItems);
 
         await userModel.findByIdAndUpdate(userId, {cartData: {}})
 
@@ -88,6 +105,9 @@ const placeOrderStripe = async (req, res) => {
         const calculation = await calculateOrderTotals(items, couponCode, userId);
         if (calculation.couponError) {
             return res.status(400).json({ success: false, message: calculation.couponError });
+        }
+        if (calculation.stockError) {
+            return res.status(400).json({ success: false, message: calculation.stockError });
         }
 
         const finalAmount = calculation.finalTotal + deliveryCharge;
@@ -169,6 +189,9 @@ const placeOrderRazorpay = async (req, res) => {
         const calculation = await calculateOrderTotals(items, couponCode, userId);
         if (calculation.couponError) {
             return res.status(400).json({ success: false, message: calculation.couponError });
+        }
+        if (calculation.stockError) {
+            return res.status(400).json({ success: false, message: calculation.stockError });
         }
 
         const finalAmount = calculation.finalTotal + deliveryCharge;
@@ -278,6 +301,10 @@ const verifyStripe = async (req, res) => {
         if (success === "true") {
             const updatedOrder = await orderModel.findByIdAndUpdate(orderId, {payment: true}, {new: true});
             await userModel.findByIdAndUpdate(req.body.userId, {cartData: {}});
+            
+            if (updatedOrder) {
+                await deductStock(updatedOrder.items);
+            }
 
             const user = await userModel.findById(req.body.userId);
             if (user && user.email && updatedOrder) {
@@ -315,6 +342,10 @@ const verifyRazorpay = async (req, res) => {
             // Payment verified
             const updatedOrder = await orderModel.findByIdAndUpdate(orderInfo._id, { payment: true }, {new: true});
             await userModel.findByIdAndUpdate(userId, { cartData: {} });
+            
+            if (updatedOrder) {
+                await deductStock(updatedOrder.items);
+            }
 
             const user = await userModel.findById(userId);
             if (user && user.email && updatedOrder) {

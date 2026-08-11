@@ -23,6 +23,7 @@ const Edit = ({ token }) => {
   const [subCategory, setSubCategory] = useState('')
   const [bestseller, setBestseller] = useState(false)
   const [sizes, setSizes] = useState([])
+  const [stockQuantities, setStockQuantities] = useState({})
   
   // Discount Fields
   const [discountType, setDiscountType] = useState('percentage')
@@ -50,6 +51,7 @@ const Edit = ({ token }) => {
           setSubCategory(product.subCategory)
           setBestseller(product.bestseller)
           setSizes(product.sizes)
+          setStockQuantities(product.stockQuantities || {})
           setExistingImages(product.image || [])
           
           // Fetch existing product discount if any
@@ -114,6 +116,7 @@ const Edit = ({ token }) => {
       formData.append('subCategory', subCategory);
       formData.append('bestseller', bestseller);
       formData.append('sizes', JSON.stringify(sizes));
+      formData.append('stockQuantities', JSON.stringify(stockQuantities));
 
       if (discountValue) {
         formData.append('discountType', discountType);
@@ -264,7 +267,16 @@ const Edit = ({ token }) => {
               {['S', 'M', 'L', 'XL', 'XXL'].map(size => (
                 <div 
                   key={size} 
-                  onClick={() => setSizes(prev => prev.includes(size) ? prev.filter(item => item !== size) : [...prev, size])}
+                  onClick={() => {
+                    setSizes(prev => prev.includes(size) ? prev.filter(item => item !== size) : [...prev, size]);
+                    if (sizes.includes(size)) {
+                        const newStock = { ...stockQuantities };
+                        delete newStock[size];
+                        setStockQuantities(newStock);
+                    } else {
+                        setStockQuantities(prev => ({ ...prev, [size]: 0 }));
+                    }
+                  }}
                   className={`w-12 h-10 flex items-center justify-center rounded-lg font-medium text-sm cursor-pointer transition-colors border ${
                     sizes.includes(size) 
                       ? "bg-slate-900 text-white border-slate-900" 
@@ -276,6 +288,28 @@ const Edit = ({ token }) => {
               ))}
             </div>
           </div>
+
+          {sizes.length > 0 && (
+            <div className='pt-4'>
+              <label className='block text-sm font-medium text-slate-700 mb-3'>Stock Quantities for Selected Sizes</label>
+              <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+                {sizes.map(size => (
+                  <div key={`stock-${size}`} className='flex flex-col'>
+                    <label className='text-xs text-slate-500 mb-1'>Size {size}</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={stockQuantities[size] !== undefined ? stockQuantities[size] : ''}
+                      onChange={(e) => setStockQuantities(prev => ({ ...prev, [size]: Number(e.target.value) }))}
+                      className='w-full px-3 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-4 focus:ring-slate-100 focus:border-slate-400 text-sm'
+                      placeholder='0'
+                      required
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className='pt-4 pb-2'>
             <label className='flex items-center gap-3 cursor-pointer group'>

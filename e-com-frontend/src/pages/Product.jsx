@@ -5,7 +5,7 @@ import { assets } from '../assets/frontend_assets/assets';
 import RelatedProducts from '../components/RelatedProducts';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { optimizeImage } from '../utils/imageOptimizer';
+import ResponsiveImage from '../components/ResponsiveImage';
 
 const Product = () => {
   const { productId } = useParams();
@@ -162,10 +162,11 @@ const Product = () => {
         <div className='w-full md:w-3/5 flex flex-col gap-8'>
           {productData.image.map((item, index) => (
             <div key={index} className='w-full bg-gray-100 overflow-hidden'>
-              <img 
-                src={optimizeImage(item)} 
+              <ResponsiveImage 
+                src={item} 
                 className='w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-[2s] ease-out' 
-                alt={`Product view ${index + 1}`} 
+                alt={`Product view ${index + 1}`}
+                sizes="(max-width: 768px) 100vw, 60vw"
               />
             </div>
           ))}

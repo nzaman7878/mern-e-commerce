@@ -126,6 +126,7 @@ const List = ({ token }) => {
                 <th className='px-6 py-4 font-semibold w-24'>Image</th>
                 <th className='px-6 py-4 font-semibold'>Name</th>
                 <th className='px-6 py-4 font-semibold'>Category</th>
+                <th className='px-6 py-4 font-semibold'>Stock</th>
                 <th className='px-6 py-4 font-semibold'>Price</th>
                 <th className='px-6 py-4 font-semibold text-right'>Actions</th>
               </tr>
@@ -155,6 +156,17 @@ const List = ({ token }) => {
                        <span className='px-2.5 py-1 bg-slate-100 text-slate-700 rounded-md text-xs font-medium'>
                         {item.category}
                        </span>
+                    </td>
+                    <td className='px-6 py-4 font-medium'>
+                      {item.stockQuantities && Object.keys(item.stockQuantities).length > 0 ? (
+                        <span className={Object.values(item.stockQuantities).reduce((acc, qty) => acc + Number(qty), 0) > 0 ? 'text-green-600' : 'text-red-600'}>
+                          {Object.values(item.stockQuantities).reduce((acc, qty) => acc + Number(qty), 0) > 0 
+                            ? Object.values(item.stockQuantities).reduce((acc, qty) => acc + Number(qty), 0) 
+                            : 'Out of Stock'}
+                        </span>
+                      ) : (
+                        <span className='text-slate-400'>N/A</span>
+                      )}
                     </td>
                     <td className='px-6 py-4 font-medium text-slate-900'>
                       {currency}{item.price}
