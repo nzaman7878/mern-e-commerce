@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ShopContext } from '../context/ShopContext'
 import ResponsiveImage from './ResponsiveImage'
 
-const ProductItem = ({ id, name, price, originalPrice, discountInfo, image }) => {
+const ProductItem = ({ id, name, price, originalPrice, discountInfo, image, stockQuantities, outOfStock }) => {
   const { currency, wishlist, toggleWishlist } = useContext(ShopContext);
 
   const handleClick = () => {
@@ -17,6 +17,12 @@ const ProductItem = ({ id, name, price, originalPrice, discountInfo, image }) =>
   };
 
   const inWishlist = wishlist?.includes(id);
+
+  const hasStockData = stockQuantities && Object.keys(stockQuantities).length > 0;
+  const totalStock = hasStockData 
+    ? Object.values(stockQuantities).reduce((acc, qty) => acc + (qty || 0), 0)
+    : 1; // Default to 1 if missing or empty so we don't accidentally mark in-stock items as out of stock
+  const isOutOfStock = outOfStock === true || (hasStockData && totalStock <= 0);
 
   return (
     <Link 
@@ -39,11 +45,16 @@ const ProductItem = ({ id, name, price, originalPrice, discountInfo, image }) =>
       )}
       <div className='overflow-hidden bg-[#FDFBF8] aspect-[3/4] relative'>
         <ResponsiveImage 
-          className='w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:scale-110 group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-700 ease-out' 
+          className={`w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:scale-110 group-hover:mix-blend-normal group-hover:opacity-100 transition-all duration-700 ease-out ${isOutOfStock ? 'grayscale opacity-60' : ''}`} 
           src={image[0]} 
           alt={name} 
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
         />
+        {isOutOfStock && (
+          <div className='absolute inset-0 flex items-center justify-center bg-black/10 z-10 pointer-events-none'>
+            <span className='bg-[#2C2723] text-white px-4 py-2 font-sans text-[10px] tracking-widest uppercase font-bold shadow-md'>Out of Stock</span>
+          </div>
+        )}
         <div className='absolute inset-0 bg-gradient-to-t from-[#F8F5F1] to-transparent opacity-50 group-hover:opacity-20 transition-opacity duration-500'></div>
       </div>
       <div className='p-6 flex flex-col items-center text-center'>

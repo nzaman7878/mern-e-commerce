@@ -48,6 +48,8 @@ const BestSeller = () => {
                price={item.price}
                originalPrice={item.originalPrice}
                discountInfo={item.discountInfo}
+               stockQuantities={item.stockQuantities}
+               outOfStock={item.outOfStock}
              />
            ))
         )}

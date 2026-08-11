@@ -49,6 +49,10 @@ const productSchema = new mongoose.Schema({
         type: Boolean, 
         default: true 
     },
+    outOfStock: {
+        type: Boolean,
+        default: false
+    },
     date: { 
         type: Date, 
         default: Date.now,

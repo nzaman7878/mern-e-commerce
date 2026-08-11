@@ -42,6 +42,24 @@ const ShopContextProvider = (props) => {
       return;
     }
 
+    const product = products.find((p) => p._id === itemId);
+    if (product) {
+      if (product.outOfStock === true) {
+        toast.error("Product is out of stock");
+        return;
+      }
+      if (product.stockQuantities) {
+        const availableStock = product.stockQuantities[size];
+        if (availableStock !== undefined) {
+          const currentCartQty = (cartItems[itemId] && cartItems[itemId][size]) ? cartItems[itemId][size] : 0;
+          if (currentCartQty >= availableStock) {
+            toast.error("Not enough stock available");
+            return;
+          }
+        }
+      }
+    }
+
     const cartData = deepClone(cartItems);
     if (cartData[itemId]) {
       if (cartData[itemId][size]) {

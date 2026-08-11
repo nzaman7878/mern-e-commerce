@@ -203,6 +203,8 @@ const Collection = () => {
                   price={item.price}
                   originalPrice={item.originalPrice}
                   discountInfo={item.discountInfo}
+                  stockQuantities={item.stockQuantities}
+                  outOfStock={item.outOfStock}
                   image={item.image}
                 />
               </div>

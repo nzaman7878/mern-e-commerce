@@ -67,8 +67,16 @@ const Cart = () => {
                   className='bg-transparent border-b border-[#2C2723]/30 w-16 px-2 py-2 text-center font-sans text-xs tracking-widest outline-none focus:border-[#2C2723] transition-colors' 
                   type="number" 
                   min={1} 
+                  max={productData.stockQuantities?.[item.size]}
                   value={item.quantity}
-                  onChange={(e) => updateQuantity(item._id, item.size, Number(e.target.value))}
+                  onChange={(e) => {
+                    let val = Number(e.target.value);
+                    const maxStock = productData.stockQuantities?.[item.size];
+                    if (maxStock !== undefined && val > maxStock) {
+                       val = maxStock;
+                    }
+                    updateQuantity(item._id, item.size, val);
+                  }}
                 />
                 
                 <button 

@@ -16,6 +16,7 @@ const Add = ({ token }) => {
   const [category, setCategory] = useState('')
   const [subCategory, setSubCategory] = useState('')
   const [bestseller, setBestseller] = useState(false)
+  const [outOfStock, setOutOfStock] = useState(false)
   const [sizes, setSizes] = useState([])
   const [stockQuantities, setStockQuantities] = useState({})
   const [categoriesList, setCategoriesList] = useState([])
@@ -58,6 +59,7 @@ const Add = ({ token }) => {
       formData.append('category', category);
       formData.append('subCategory', subCategory);
       formData.append('bestseller', bestseller);
+      formData.append('outOfStock', outOfStock);
       formData.append('sizes', JSON.stringify(sizes));
       formData.append('stockQuantities', JSON.stringify(stockQuantities));
 
@@ -81,6 +83,7 @@ const Add = ({ token }) => {
         setCategory('')
         setSubCategory('')
         setBestseller(false)
+        setOutOfStock(false)
         setSizes([])
         setStockQuantities({})
         setImage1(null)
@@ -252,7 +255,7 @@ const Add = ({ token }) => {
             </div>
           )}
 
-          <div className='pt-4 pb-2'>
+          <div className='pt-4 pb-2 flex flex-col gap-3'>
             <label className='flex items-center gap-3 cursor-pointer group'>
               <input
                 type="checkbox"
@@ -262,6 +265,16 @@ const Add = ({ token }) => {
                 className='w-5 h-5 rounded border-gray-300 text-slate-900 focus:ring-slate-900'
               />
               <span className='text-sm font-medium text-slate-700 group-hover:text-slate-900'>Mark as Bestseller</span>
+            </label>
+            <label className='flex items-center gap-3 cursor-pointer group'>
+              <input
+                type="checkbox"
+                id="outOfStock"
+                checked={outOfStock}
+                onChange={() => setOutOfStock(prev => !prev)}
+                className='w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-600'
+              />
+              <span className='text-sm font-medium text-slate-700 group-hover:text-red-600'>Mark as Out of Stock</span>
             </label>
           </div>
         </div>

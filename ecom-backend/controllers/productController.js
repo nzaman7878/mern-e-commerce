@@ -71,7 +71,7 @@ const applyDiscountsToProducts = async (products) => {
 const addProduct = async (req, res) => {
   try {
     
-    const { name, description, price, category, subCategory, sizes, stockQuantities, bestseller, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
+    const { name, description, price, category, subCategory, sizes, stockQuantities, bestseller, outOfStock, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
 
     
     const image1 = req.files.image1 && req.files.image1[0];
@@ -102,6 +102,7 @@ const addProduct = async (req, res) => {
       description,
       price: Number(price),
       bestseller: bestseller === 'true' || bestseller === true, 
+      outOfStock: outOfStock === 'true' || outOfStock === true,
       category,
       subCategory,
       sizes: JSON.parse(sizes), 
@@ -296,7 +297,7 @@ const singleProduct = async (req, res) => {
 // Function to update a product
 const updateProduct = async (req, res) => {
   try {
-    const { id, name, description, price, category, subCategory, sizes, stockQuantities, bestseller, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
+    const { id, name, description, price, category, subCategory, sizes, stockQuantities, bestseller, outOfStock, discountType, discountValue, discountStartDate, discountEndDate } = req.body;
 
     if (!id) {
       return res.status(400).json({ success: false, message: 'Product ID is required.' });
@@ -314,6 +315,7 @@ const updateProduct = async (req, res) => {
       description,
       price: Number(price),
       bestseller: bestseller === 'true' || bestseller === true,
+      outOfStock: outOfStock === 'true' || outOfStock === true,
       category,
       subCategory,
       sizes: sizes ? JSON.parse(sizes) : [],

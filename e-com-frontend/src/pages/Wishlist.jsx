@@ -35,6 +35,8 @@ const Wishlist = () => {
                             image={item.image}
                             originalPrice={item.originalPrice}
                             discountInfo={item.discountInfo}
+                            stockQuantities={item.stockQuantities}
+                            outOfStock={item.outOfStock}
                         />
                     ))}
                 </div>

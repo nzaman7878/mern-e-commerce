@@ -153,6 +153,12 @@ const Product = () => {
     );
   }
 
+  const hasStockData = productData.stockQuantities && Object.keys(productData.stockQuantities).length > 0;
+  const totalStock = hasStockData 
+    ? Object.values(productData.stockQuantities).reduce((acc, qty) => acc + (qty || 0), 0)
+    : 1;
+  const isOutOfStock = productData.outOfStock === true || (hasStockData && totalStock <= 0);
+
   return (
     <div className='bg-[#F8F5F1] text-[#2C2723] transition-opacity ease-in duration-500 opacity-100 min-h-screen pt-32 pb-24'>
       
@@ -161,13 +167,18 @@ const Product = () => {
         {/* Editorial Vertical Image Stack */}
         <div className='w-full md:w-3/5 flex flex-col gap-8'>
           {productData.image.map((item, index) => (
-            <div key={index} className='w-full bg-gray-100 overflow-hidden'>
+            <div key={index} className='w-full bg-gray-100 overflow-hidden relative'>
               <ResponsiveImage 
                 src={item} 
-                className='w-full h-auto object-cover grayscale hover:grayscale-0 transition-all duration-[2s] ease-out' 
+                className={`w-full h-auto object-cover transition-all duration-[2s] ease-out ${isOutOfStock ? 'grayscale opacity-60' : 'grayscale hover:grayscale-0'}`} 
                 alt={`Product view ${index + 1}`}
                 sizes="(max-width: 768px) 100vw, 60vw"
               />
+              {isOutOfStock && index === 0 && (
+                <div className='absolute inset-0 flex items-center justify-center bg-black/10 z-10 pointer-events-none'>
+                  <span className='bg-[#2C2723] text-white px-6 py-3 font-sans text-xs tracking-widest uppercase font-bold shadow-md'>Out of Stock</span>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -178,6 +189,12 @@ const Product = () => {
             <div className='mb-12'>
               <p className='font-sans text-xs tracking-[0.2em] uppercase text-[#7B746E] mb-4'>Archive / {productData.category}</p>
               <h1 className='font-serif text-5xl lg:text-7xl leading-none mb-6'>{productData.name}</h1>
+              
+              {isOutOfStock && (
+                <div className='inline-block bg-[#2C2723] text-white px-4 py-2 font-sans text-[10px] tracking-widest uppercase font-bold mb-6 shadow-sm'>
+                  Out of Stock
+                </div>
+              )}
               
               {/* Added Rating Display */}
               <div className='flex items-center gap-4 mb-6'>
@@ -211,15 +228,22 @@ const Product = () => {
             <div className='mb-12'>
               <p className='font-sans text-xs tracking-widest uppercase mb-4'>Select Size</p>
               <div className='flex gap-4 flex-wrap'>
-                {productData.sizes.map((item, index) => (
+                {productData.sizes.map((item, index) => {
+                  const hasSizeData = productData.stockQuantities && productData.stockQuantities[item] !== undefined;
+                  const sizeStock = hasSizeData ? productData.stockQuantities[item] : 1;
+                  const isSizeOutOfStock = productData.outOfStock === true || (hasSizeData && sizeStock <= 0);
+                  
+                  return (
                   <button 
-                    onClick={() => setSelectedSize(item)} 
-                    className={`font-sans text-sm w-12 h-12 border ${item === selectedSize ? 'border-[#2C2723] bg-[#2C2723] text-[#F8F5F1]' : 'border-gray-300 hover:border-[#2C2723]'} transition-colors`} 
+                    onClick={() => !isSizeOutOfStock && setSelectedSize(item)} 
+                    className={`font-sans text-sm w-12 h-12 border ${item === selectedSize ? 'border-[#2C2723] bg-[#2C2723] text-[#F8F5F1]' : (isSizeOutOfStock ? 'border-gray-200 text-gray-300 cursor-not-allowed bg-gray-50' : 'border-gray-300 hover:border-[#2C2723]')} transition-colors relative overflow-hidden`} 
                     key={index}
+                    disabled={isSizeOutOfStock}
                   >
                     {item}
+                    {isSizeOutOfStock && <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><div className="w-[140%] h-[1px] bg-gray-300 transform -rotate-45"></div></div>}
                   </button>
-                ))}
+                )})}
               </div>
             </div>
             
@@ -227,9 +251,9 @@ const Product = () => {
               <button  
                 onClick={() => addToCart(productData._id, selectedSize)}
                 className='flex-1 bg-[#2C2723] text-[#F8F5F1] py-5 font-sans text-xs tracking-[0.2em] uppercase hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-                disabled={!selectedSize}
+                disabled={!selectedSize || isOutOfStock}
               >
-                {selectedSize ? 'Add to Archive' : 'Select Size'}
+                {isOutOfStock ? 'Out of Stock' : (selectedSize ? 'Add to Archive' : 'Select Size')}
               </button>
               
               <button 
