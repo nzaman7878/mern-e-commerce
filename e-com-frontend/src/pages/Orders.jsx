@@ -1,8 +1,7 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { ShopContext } from '../context/ShopContext'
-import { useState } from 'react';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 const Orders = () => {
   const {backendUrl, token, currency} = useContext(ShopContext);
@@ -42,6 +41,22 @@ const Orders = () => {
     loadOrderData()
   }, [token])
 
+  const handleTrackOrder = async () => {
+    await loadOrderData();
+    toast.success("Order status refreshed!");
+  }
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Order Placed': return 'text-gray-500';
+      case 'Packing': return 'text-orange-500';
+      case 'Shipped': return 'text-blue-500';
+      case 'Out for delivery': return 'text-purple-500';
+      case 'Delivered': return 'text-green-500';
+      default: return 'text-[#2C2723]';
+    }
+  }
+
   return (
     <div className='bg-[#F8F5F1] text-[#2C2723] min-h-screen pt-32 px-6 md:px-12 lg:px-24'>
       <div className='mb-24'>
@@ -80,9 +95,9 @@ const Orders = () => {
               
               <div className='md:w-1/3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6'>
                 <div className='flex items-center gap-2'>
-                  <p className='font-sans text-xs tracking-widest uppercase'>[ {item.status} ]</p>
+                  <p className='font-sans text-xs tracking-widest uppercase'>[ <span className={getStatusColor(item.status)}>{item.status}</span> ]</p>
                 </div>
-                <button onClick={loadOrderData} className='bg-transparent border border-[#2C2723] text-[#2C2723] px-6 py-3 font-sans text-[10px] tracking-[0.2em] uppercase hover:bg-[#2C2723] hover:text-[#F8F5F1] transition-colors shrink-0'>
+                <button onClick={handleTrackOrder} className='bg-transparent border border-[#2C2723] text-[#2C2723] px-6 py-3 font-sans text-[10px] tracking-[0.2em] uppercase hover:bg-[#2C2723] hover:text-[#F8F5F1] transition-colors shrink-0'>
                   Track
                 </button>
               </div>
@@ -96,3 +111,4 @@ const Orders = () => {
 }
 
 export default Orders
+
