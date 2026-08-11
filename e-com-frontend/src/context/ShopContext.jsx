@@ -148,13 +148,16 @@ const ShopContextProvider = (props) => {
     }
   }, [cartItems]);
 
-  // Fetch product details for items in cart
-  const fetchCartProducts = async () => {
-    const itemIds = Object.keys(cartItems);
-    if (itemIds.length === 0) return;
+  // Fetch product details for items in cart and wishlist
+  const fetchCartAndWishlistProducts = async () => {
+    const cartIds = Object.keys(cartItems);
+    const wishlistIds = wishlist || [];
+    
+    const allIds = [...new Set([...cartIds, ...wishlistIds])];
+    if (allIds.length === 0) return;
     
     // Fetch only if there are IDs not already in `products`
-    const missingIds = itemIds.filter(id => !products.some(p => p._id === id));
+    const missingIds = allIds.filter(id => !products.some(p => p._id === id));
     if (missingIds.length === 0) return;
 
     try {
@@ -176,9 +179,9 @@ const ShopContextProvider = (props) => {
   };
 
   useEffect(() => {
-    fetchCartProducts();
+    fetchCartAndWishlistProducts();
     // eslint-disable-next-line
-  }, [cartItems]);
+  }, [cartItems, wishlist]);
   const [userData, setUserData] = useState(null);
 
   const fetchUserData = async (currentToken) => {
