@@ -7,7 +7,7 @@ import { sendPasswordReset } from '../utils/mailer.js';
 
 // Function to create JWT token
 const createToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET);
+    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 };
 
 
@@ -128,8 +128,9 @@ const adminLogin = async (req, res) => {
     ) {
       
       const token = jwt.sign(
-        email+password,process.env.JWT_SECRET,
-               
+        { role: 'admin', email },
+        process.env.JWT_SECRET,
+        { expiresIn: '1d' }
       );
       res.json({ success: true, token });
       
