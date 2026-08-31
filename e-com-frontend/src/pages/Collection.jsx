@@ -112,7 +112,7 @@ const Collection = () => {
   }, [backendUrl]);
 
   return (
-    <div className='relative flex flex-col md:flex-row gap-8 lg:gap-16 pt-32 px-6 md:px-12 lg:px-24 min-h-screen overflow-hidden'>
+    <div className='relative flex flex-col md:flex-row gap-8 lg:gap-16 pt-32 px-6 md:px-12 lg:px-24 min-h-screen overflow-clip'>
       {/* Background Aura */}
       <div className='absolute top-0 right-0 w-[800px] h-[800px] bg-[#C96A3C] rounded-full blur-[150px] opacity-[0.03] pointer-events-none translate-x-1/2 -translate-y-1/2'></div>
       
